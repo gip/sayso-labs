@@ -1,0 +1,9 @@
+{
+  "action": "forget-me",
+  "status": "partial",
+  "details": {
+    "deleted": ["session_state", "profile_cache"],
+    "retained": ["settled_payment_records"],
+    "retentionReason": "Payment records are retained for accounting."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "requestId": "premium_reg_private_001",
+  "agent": {
+    "agentId": "sayso-demo-private",
+    "syncInboxId": "xmtp_inbox_private_sync",
+    "displayName": "Private Premium Agent",
+    "protocolVersion": "0.1.0"
+  },
+  "visibility": "private",
+  "profile": {
+    "description": "Premium registrations must be public.",
+    "skillDisclosure": "summary-only"
+  }
+}

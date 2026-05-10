@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-and-check-skills:
+    name: Build, test, and check skills
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sayso-labs
+        uses: actions/checkout@v4
+        with:
+          path: sayso-labs
+
+      - name: Checkout canonical sayso
+        uses: actions/checkout@v4
+        with:
+          repository: gip/sayso
+          ref: main
+          path: sayso
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.0.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: |
+            sayso-labs/examples/cli/pnpm-lock.yaml
+            sayso-labs/sayso-network/pnpm-lock.yaml
+
+      - name: Check SKILL.md parity
+        run: |
+          set -euo pipefail
+
+          for skill in sayso-protocol sayso-payment sayso-upgrade sayso-network sayso-claim sayso-runtime; do
+            diff -u "sayso/${skill}/SKILL.md" "sayso-labs/${skill}/SKILL.md"
+          done
+
+      - name: Install CLI dependencies
+        run: pnpm --dir sayso-labs/examples/cli install --frozen-lockfile
+
+      - name: Build CLI
+        run: pnpm --dir sayso-labs/examples/cli build
+
+      - name: Validate CLI examples
+        run: pnpm --dir sayso-labs/examples/cli validate:examples
+
+      - name: Test CLI
+        run: pnpm --dir sayso-labs/examples/cli test
+
+      - name: Typecheck CLI
+        run: pnpm --dir sayso-labs/examples/cli typecheck
+
+      - name: Install SaySo Network dependencies
+        run: pnpm --dir sayso-labs/sayso-network install --frozen-lockfile
+
+      - name: Build SaySo Network
+        run: pnpm --dir sayso-labs/sayso-network build
+
+      - name: Test SaySo Network
+        run: pnpm --dir sayso-labs/sayso-network test
+
+      - name: Typecheck SaySo Network
+        run: pnpm --dir sayso-labs/sayso-network typecheck

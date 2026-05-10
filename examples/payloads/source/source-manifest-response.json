@@ -1,0 +1,27 @@
+{
+  "requestId": "source_manifest_001",
+  "status": "ok",
+  "snapshotId": "snapshot_20260504_001",
+  "createdAt": "2026-05-04T12:01:00.000Z",
+  "expiresAt": "2026-05-04T12:31:00.000Z",
+  "chunkSizeBytes": 65536,
+  "files": [
+    {
+      "path": "src/agent.ts",
+      "kind": "file",
+      "sizeBytes": 37,
+      "sha256": "57ea3db3367d8ae13832f1b2998b430ebb5c305fa7136f642a094d2f22d20a9f",
+      "chunks": 1,
+      "mediaType": "text/typescript"
+    }
+  ],
+  "archives": [
+    {
+      "format": "tar.gz",
+      "sizeBytes": 13,
+      "sha256": "0c982986710a026635603031674053ca851fc0e3ea760094a34f59b84f7f6da6",
+      "chunks": 1,
+      "mediaType": "application/gzip"
+    }
+  ]
+}

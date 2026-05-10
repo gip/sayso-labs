@@ -1,0 +1,14 @@
+{
+  "implementations": [
+    {
+      "implementationId": "onchain-verifier-js",
+      "implements": ["onchain.verify"],
+      "language": "javascript",
+      "runtime": "node>=20",
+      "entrypoint": "verifyOnchain",
+      "source": "export async function verifyOnchain(input, context) {\n  return { ok: true, chainId: input.chainId, target: input.target, blockNumber: context.blockNumber ?? null };\n}\n",
+      "sha256": "7fdd1119c64d0f7f13d41778f6b514bd788e5afd876d689d6066791263d65f50",
+      "permissions": ["chain.read"]
+    }
+  ]
+}

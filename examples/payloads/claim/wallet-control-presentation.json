@@ -1,0 +1,53 @@
+{
+  "type": "sayso.claim.wallet-control",
+  "payload": {
+    "message": {
+      "claim": "I control these wallets",
+      "wallets": [
+        {
+          "type": "ethereum",
+          "address": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"
+        },
+        {
+          "type": "stellar",
+          "address": "GABCDEFGHIJKLMNOPQRSTUVWXYZ234567ABCDEFGH"
+        },
+        {
+          "type": "ripple",
+          "address": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"
+        },
+        {
+          "type": "bitcoin",
+          "address": "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kygt080"
+        }
+      ],
+      "timestamp": "2026-05-02T00:00:00Z"
+    },
+    "signatures": [
+      {
+        "type": "ethereum",
+        "address": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+        "signatureScheme": "eip191",
+        "signature": "0xsignature"
+      },
+      {
+        "type": "stellar",
+        "address": "GABCDEFGHIJKLMNOPQRSTUVWXYZ234567ABCDEFGH",
+        "signatureScheme": "stellar-ed25519",
+        "signature": "stellar_signature"
+      },
+      {
+        "type": "ripple",
+        "address": "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
+        "signatureScheme": "xrpl-secp256k1",
+        "signature": "ripple_signature"
+      },
+      {
+        "type": "bitcoin",
+        "address": "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kygt080",
+        "signatureScheme": "bip322",
+        "signature": "bitcoin_signature"
+      }
+    ]
+  }
+}

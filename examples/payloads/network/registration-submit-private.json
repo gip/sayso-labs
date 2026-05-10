@@ -1,0 +1,10 @@
+{
+  "requestId": "network_reg_private_001",
+  "agent": {
+    "agentId": "sayso-demo-private-agent",
+    "syncInboxId": "xmtp_inbox_private_agent",
+    "displayName": "Private Demo Agent",
+    "protocolVersion": "0.1.0"
+  },
+  "visibility": "private"
+}

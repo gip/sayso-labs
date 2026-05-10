@@ -1,0 +1,9 @@
+{
+  "requestId": "source_manifest_001",
+  "format": "tar.gz",
+  "exclude": [
+    "node_modules",
+    ".env"
+  ],
+  "maxChunkSizeBytes": 65536
+}

@@ -1,0 +1,61 @@
+{
+  "requestId": "fork_offers_001",
+  "status": "ok",
+  "offers": [
+    {
+      "offerId": "fork-free-1h",
+      "title": "One hour fork",
+      "description": "Free short-lived fork for evaluation.",
+      "durationSeconds": 3600,
+      "provider": {
+        "providerId": "sayso-local",
+        "name": "SaySo Local",
+        "kind": "container",
+        "region": "local"
+      },
+      "requiredConfiguration": [
+        "OPENAI_API_KEY"
+      ],
+      "payment": {
+        "required": false
+      }
+    },
+    {
+      "offerId": "fork-paid-30d",
+      "title": "Thirty day fork",
+      "description": "Paid fork with a 30 day validity window.",
+      "durationSeconds": 2592000,
+      "expiresAt": "2026-05-04T12:10:00.000Z",
+      "provider": {
+        "providerId": "sayso-cloud",
+        "name": "SaySo Cloud",
+        "kind": "managed-container",
+        "region": "us-east-1",
+        "termsUri": "https://sayso.example/terms/fork"
+      },
+      "requiredConfiguration": [
+        "OPENAI_API_KEY"
+      ],
+      "payment": {
+        "required": true,
+        "x402Version": 1,
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "5000000",
+            "payTo": "0x1111111111111111111111111111111111111111",
+            "maxTimeoutSeconds": 300,
+            "extra": {
+              "name": "USDC",
+              "decimals": 6,
+              "chain": "Base"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "generatedAt": "2026-05-04T12:02:00.000Z"
+}

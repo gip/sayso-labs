@@ -1,0 +1,268 @@
+{
+  "proposalId": "upgrade_add_payments_001",
+  "baseProtocolVersion": "0.1.0",
+  "baseSkillIds": [
+    "sayso.protocol",
+    "sayso.upgrade"
+  ],
+  "skillChanges": [
+    {
+      "skillId": "sayso.protocol",
+      "operation": "keep",
+      "fromVersion": "0.1.0",
+      "toVersion": "0.1.0"
+    },
+    {
+      "skillId": "sayso.upgrade",
+      "operation": "keep",
+      "fromVersion": "0.1.0",
+      "toVersion": "0.1.0"
+    },
+    {
+      "skillId": "sayso.payment",
+      "operation": "add",
+      "toVersion": "0.1.0",
+      "reason": "Enable x402-shaped payment negotiation for paid verification."
+    },
+    {
+      "skillId": "sayso.services.onchain-verifier",
+      "operation": "add",
+      "toVersion": "0.1.0",
+      "reason": "Enable paid onchain verification."
+    }
+  ],
+  "targetSkills": [
+    {
+      "skillId": "sayso.protocol",
+      "name": "SaySo Protocol",
+      "version": "0.1.0",
+      "kind": "meta",
+      "imports": [],
+      "skill": {
+        "capabilities": [],
+        "contentTypes": [
+          {
+            "authorityId": "sayso.protocol",
+            "typeId": "agent-info",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+            "channel": "sync"
+          }
+        ],
+        "channels": [],
+        "paymentPolicies": []
+      },
+      "content": "# SaySo Protocol\n\nMandatory meta protocol.",
+      "mediaType": "text/markdown"
+    },
+    {
+      "skillId": "sayso.upgrade",
+      "name": "SaySo Upgrades",
+      "version": "0.1.0",
+      "kind": "meta-extension",
+      "imports": [
+        {
+          "skillId": "sayso.protocol",
+          "version": "^0.1.0",
+          "required": true
+        }
+      ],
+      "skill": {
+        "capabilities": [
+          {
+            "capabilityId": "sayso.upgrade.negotiate",
+            "title": "Protocol upgrades",
+            "description": "Negotiate per-conversation active skill bundle changes.",
+            "requestContentTypes": [
+              "sayso.upgrade/upgrade-proposal/1",
+              "sayso.upgrade/upgrade-accept/1",
+              "sayso.upgrade/upgrade-reject/1"
+            ],
+            "responseContentTypes": [
+              "sayso.upgrade/upgrade-proposal/1",
+              "sayso.upgrade/upgrade-accept/1",
+              "sayso.upgrade/upgrade-reject/1"
+            ],
+            "channels": [
+              "sync"
+            ],
+            "paymentPolicy": "none"
+          }
+        ],
+        "contentTypes": [
+          {
+            "authorityId": "sayso.protocol",
+            "typeId": "agent-info",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.upgrade",
+            "typeId": "upgrade-proposal",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Propose a replacement active skill bundle.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.upgrade",
+            "typeId": "upgrade-accept",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Accept an upgrade proposal.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.upgrade",
+            "typeId": "upgrade-reject",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Reject an upgrade proposal.",
+            "channel": "sync"
+          }
+        ],
+        "channels": [],
+        "paymentPolicies": []
+      },
+      "content": "# SaySo Upgrades\n\nOptional per-conversation skill bundle upgrade negotiation.",
+      "mediaType": "text/markdown"
+    },
+    {
+      "skillId": "sayso.payment",
+      "name": "SaySo Payments",
+      "version": "0.1.0",
+      "kind": "payment",
+      "imports": [
+        {
+          "skillId": "sayso.protocol",
+          "version": "^0.1.0",
+          "required": true
+        }
+      ],
+      "skill": {
+        "capabilities": [],
+        "contentTypes": [
+          {
+            "authorityId": "sayso.protocol",
+            "typeId": "agent-info",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.payment",
+            "typeId": "payment-required",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Describe payment requirements for a request.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.payment",
+            "typeId": "payment-submit",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Submit an x402 payment payload.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.payment",
+            "typeId": "payment-result",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Report payment verification or settlement.",
+            "channel": "sync"
+          }
+        ],
+        "channels": [],
+        "paymentPolicies": []
+      },
+      "content": "# SaySo Payments\n\nOptional payment negotiation.",
+      "mediaType": "text/markdown"
+    },
+    {
+      "skillId": "sayso.services.onchain-verifier",
+      "name": "SaySo Onchain Verifier",
+      "version": "0.1.0",
+      "kind": "service",
+      "imports": [
+        {
+          "skillId": "sayso.protocol",
+          "version": "^0.1.0",
+          "required": true
+        },
+        {
+          "skillId": "sayso.payment",
+          "version": "^0.1.0",
+          "required": true
+        }
+      ],
+      "skill": {
+        "capabilities": [
+          {
+            "capabilityId": "onchain.verify",
+            "title": "Onchain verification",
+            "description": "Verify a target against onchain state.",
+            "requestContentTypes": [
+              "sayso.services.onchain-verifier/verify-request/1"
+            ],
+            "responseContentTypes": [
+              "sayso.services.onchain-verifier/verify-response/1"
+            ],
+            "channels": [
+              "sync"
+            ],
+            "paymentPolicy": "required"
+          }
+        ],
+        "contentTypes": [
+          {
+            "authorityId": "sayso.protocol",
+            "typeId": "agent-info",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+            "channel": "sync"
+          }
+        ],
+        "channels": [],
+        "paymentPolicies": [
+          {
+            "policyId": "per-verification",
+            "capabilityIds": [
+              "onchain.verify"
+            ],
+            "required": true,
+            "terms": {
+              "pricing": "x402 exact payment per verification"
+            }
+          }
+        ]
+      },
+      "content": "# SaySo Onchain Verifier\n\nVerifies a target against onchain state and charges per verification.",
+      "mediaType": "text/markdown"
+    }
+  ],
+  "targetResolution": {
+    "mode": "all",
+    "includedSkillIds": [
+      "sayso.protocol",
+      "sayso.upgrade",
+      "sayso.payment",
+      "sayso.services.onchain-verifier"
+    ],
+    "dependencyOrder": [
+      "sayso.protocol",
+      "sayso.upgrade",
+      "sayso.payment",
+      "sayso.services.onchain-verifier"
+    ]
+  },
+  "summary": "Add payment negotiation and a paid onchain verifier.",
+  "expiresAt": "2026-05-01T12:00:00Z",
+  "targetMode": "sayso-bundle"
+}

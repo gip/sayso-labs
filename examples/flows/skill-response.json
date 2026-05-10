@@ -1,0 +1,144 @@
+{
+  "status": "ok",
+  "agent": {
+    "agentId": "agent_sayso_demo",
+    "kind": "service",
+    "syncInboxId": "xmtp_inbox_demo_sync",
+    "displayName": "Demo SaySo Agent",
+    "protocolVersion": "0.1.0"
+  },
+  "skill": {
+    "capabilities": [
+      {
+        "capabilityId": "sayso.connection",
+        "title": "SaySo connection",
+        "description": "Connect and read the current SaySo protocol version.",
+        "requestContentTypes": [
+          "sayso.protocol/connection-request/1"
+        ],
+        "responseContentTypes": [
+          "sayso.protocol/agent-info/1",
+          "sayso.protocol/connection-response/1"
+        ],
+        "channels": [
+          "sync"
+        ],
+        "paymentPolicy": "none"
+      },
+      {
+        "capabilityId": "sayso.discovery",
+        "title": "Skill discovery",
+        "description": "Return the structured and human-readable skill contract for this agent.",
+        "requestContentTypes": [
+          "sayso.protocol/skill-request/1"
+        ],
+        "responseContentTypes": [
+          "sayso.protocol/skill-response/1"
+        ],
+        "channels": [
+          "sync"
+        ],
+        "paymentPolicy": "none"
+      }
+    ],
+    "contentTypes": [
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "agent-info",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "connection-request",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Request SaySo connection with an empty JSON payload or optional claim presentations.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "connection-response",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Return SaySo protocol version and next step.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "skill-request",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Request the agent skill contract.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "skill-response",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Return the agent skill contract.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "disconnect",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Close the current conversation context.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "forget-me",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Close the relationship and request data deletion.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "disconnect-ack",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Report disconnect or deletion handling.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "error",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Report a core protocol error.",
+        "channel": "sync"
+      }
+    ],
+    "channels": [
+      {
+        "channelId": "sync",
+        "kind": "sync",
+        "description": "Public XMTP sync inbox for connection, discovery, disconnect, and errors.",
+        "inboxId": "xmtp_inbox_demo_sync",
+        "contentTypes": [
+          "sayso.protocol/agent-info/1",
+          "sayso.protocol/connection-request/1",
+          "sayso.protocol/connection-response/1",
+          "sayso.protocol/skill-request/1",
+          "sayso.protocol/skill-response/1",
+          "sayso.protocol/disconnect/1",
+          "sayso.protocol/forget-me/1",
+          "sayso.protocol/disconnect-ack/1",
+          "sayso.protocol/error/1"
+        ]
+      }
+    ],
+    "paymentPolicies": [],
+    "claims": {
+      "requirements": "Claim presentation support is advertised through claim skills such as sayso.claim."
+    }
+  },
+  "content": "# Demo SaySo Agent\n\nThis agent supports the SaySo baseline protocol.",
+  "mediaType": "text/markdown"
+}

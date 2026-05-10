@@ -1,0 +1,27 @@
+{
+  "requestId": "fork_req_paid_001",
+  "payment": {
+    "x402Version": 1,
+    "resource": {
+      "url": "xmtp://sayso.payment/agent_sayso_demo/requests/fork_req_paid_001",
+      "description": "Thirty day fork for agent_sayso_demo",
+      "mimeType": "application/json"
+    },
+    "accepted": {
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "amount": "5000000",
+      "payTo": "0x1111111111111111111111111111111111111111",
+      "maxTimeoutSeconds": 300,
+      "extra": {
+        "name": "USDC",
+        "decimals": 6,
+        "chain": "Base"
+      }
+    },
+    "payload": {
+      "transaction": "0xforkpayment"
+    }
+  }
+}

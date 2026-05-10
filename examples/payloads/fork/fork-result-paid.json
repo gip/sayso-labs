@@ -1,0 +1,22 @@
+{
+  "requestId": "fork_req_paid_001",
+  "status": "accepted",
+  "forkId": "fork_paid_001",
+  "offerId": "fork-paid-30d",
+  "provider": {
+    "providerId": "sayso-cloud",
+    "name": "SaySo Cloud",
+    "kind": "managed-container",
+    "region": "us-east-1",
+    "termsUri": "https://sayso.example/terms/fork"
+  },
+  "validFrom": "2026-05-04T12:05:00.000Z",
+  "expiresAt": "2026-06-03T12:05:00.000Z",
+  "agent": {
+    "agentId": "agent_sayso_demo_fork_paid_001",
+    "syncInboxId": "xmtp_inbox_fork_paid_001",
+    "displayName": "Demo SaySo Agent Paid Fork",
+    "protocolVersion": "0.1.0",
+    "endpointUri": "xmtp://xmtp_inbox_fork_paid_001"
+  }
+}

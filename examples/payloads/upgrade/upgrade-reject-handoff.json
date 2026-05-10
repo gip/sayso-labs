@@ -1,0 +1,5 @@
+{
+  "proposalId": "upgrade_handoff_agentmesh_001",
+  "code": "unsupported",
+  "reason": "This client does not support leaving SaySo in the current conversation."
+}

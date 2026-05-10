@@ -1,0 +1,25 @@
+{
+  "type": "sayso.claim.agent-connection",
+  "payload": {
+    "message": {
+      "claim": "I want to connect to this SaySo agent",
+      "requester": {
+        "type": "ethereum",
+        "address": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"
+      },
+      "agent": {
+        "type": "ethereum",
+        "address": "0x1234567890123456789012345678901234567890"
+      },
+      "timestamp": "2026-05-02T00:00:00Z"
+    },
+    "signatures": [
+      {
+        "type": "ethereum",
+        "address": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+        "signatureScheme": "eip191",
+        "signature": "0xsignature"
+      }
+    ]
+  }
+}

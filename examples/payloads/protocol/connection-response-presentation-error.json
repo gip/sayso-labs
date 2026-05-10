@@ -1,0 +1,10 @@
+{
+  "status": "error",
+  "supportedProtocolVersions": [
+    "0.1.0"
+  ],
+  "error": {
+    "code": "presentation-verification-failed",
+    "message": "The submitted sayso.claim.world-id.wallet presentation could not be verified."
+  }
+}

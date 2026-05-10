@@ -1,0 +1,9 @@
+{
+  "requestId": "source_chunk_001",
+  "snapshotId": "snapshot_20260504_001",
+  "target": {
+    "kind": "file",
+    "path": "src/agent.ts"
+  },
+  "chunkIndex": 0
+}

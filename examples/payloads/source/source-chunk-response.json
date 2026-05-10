@@ -1,0 +1,13 @@
+{
+  "requestId": "source_chunk_001",
+  "status": "ok",
+  "snapshotId": "snapshot_20260504_001",
+  "target": {
+    "kind": "file",
+    "path": "src/agent.ts"
+  },
+  "chunkIndex": 0,
+  "chunkCount": 1,
+  "sha256": "57ea3db3367d8ae13832f1b2998b430ebb5c305fa7136f642a094d2f22d20a9f",
+  "bytesBase64": "ZXhwb3J0IGNvbnN0IGhhbmRsZXIgPSAoKSA9PiAncG9uZyc7Cg=="
+}

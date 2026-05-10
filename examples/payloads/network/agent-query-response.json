@@ -1,0 +1,22 @@
+{
+  "requestId": "network_query_001",
+  "results": [
+    {
+      "registrationId": "reg_sayso_demo_pong",
+      "walletAddress": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+      "agent": {
+        "agentId": "sayso-demo-pong",
+        "syncInboxId": "xmtp_inbox_pong_sync",
+        "displayName": "SaySo Demo Pong",
+        "protocolVersion": "0.1.0"
+      },
+      "visibility": "public",
+      "listingTier": "standard",
+      "description": "No-payment demo agent that responds to SaySo ping requests with pong responses.",
+      "skillDisclosure": "summary-only",
+      "claimTypes": [],
+      "connectionCount": 3,
+      "updatedAt": "2026-05-01T12:00:00.000Z"
+    }
+  ]
+}

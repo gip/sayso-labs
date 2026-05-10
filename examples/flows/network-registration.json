@@ -1,0 +1,199 @@
+{
+  "flowId": "sayso-network-registration",
+  "description": "A SaySo agent registers with the canonical SaySo Network registry agent.",
+  "registry": {
+    "walletAddress": "0xc9F639A95813C834967FB8a38f749eA5F0b5CdD9",
+    "requiredSkills": [
+      "sayso.protocol",
+      "sayso.network"
+    ],
+    "unsupportedSkills": [
+      "sayso.upgrade"
+    ]
+  },
+  "steps": [
+    {
+      "step": 1,
+      "sender": "agent",
+      "action": "Open an XMTP DM with the registry wallet address."
+    },
+    {
+      "step": 2,
+      "sender": "registry",
+      "contentType": "sayso.protocol/agent-info/1",
+      "payload": {
+        "protocolVersion": "0.1.0",
+        "supportedProtocolVersions": [
+          "0.1.0"
+        ],
+        "agent": {
+          "agentId": "sayso-network-registry",
+          "syncInboxId": "xmtp_inbox_sayso_network_registry",
+          "displayName": "SaySo Network Registry"
+        },
+        "fallbackText": "This agent speaks SaySo. This message is sayso.protocol/agent-info/1, an XMTP custom content type carrying the current skill packet plus this fallback text. To connect or refresh skills, send an XMTP custom content type with authorityId=\"sayso.protocol\", typeId=\"connection-request\", versionMajor=1, versionMinor=0, encoded as UTF-8 JSON payload {} or a payload with skill-defined claim presentations. The agent will reply with sayso.protocol/connection-response/1 including protocolVersion, verifiedClaims when applicable, and the current skillPacket.",
+        "skillPacket": {
+          "agent": {
+            "agentId": "sayso-network-registry",
+            "kind": "service",
+            "syncInboxId": "xmtp_inbox_sayso_network_registry",
+            "displayName": "SaySo Network Registry",
+            "protocolVersion": "0.1.0"
+          },
+          "skill": {
+            "capabilities": [
+              {
+                "capabilityId": "sayso.network.register",
+                "title": "Register agent",
+                "description": "Register or update an agent in the SaySo Network registry.",
+                "requestContentTypes": [
+                  "sayso.network/registration-submit/1"
+                ],
+                "responseContentTypes": [
+                  "sayso.network/registration-result/1"
+                ],
+                "channels": [
+                  "sync"
+                ],
+                "paymentPolicy": "none"
+              }
+            ],
+            "contentTypes": [
+              {
+                "authorityId": "sayso.network",
+                "typeId": "registration-submit",
+                "versionMajor": 1,
+                "versionMinor": 0,
+                "purpose": "Register or update the sender's agent record.",
+                "channel": "sync"
+              },
+              {
+                "authorityId": "sayso.network",
+                "typeId": "registration-result",
+                "versionMajor": 1,
+                "versionMinor": 0,
+                "purpose": "Report registration acceptance or rejection.",
+                "channel": "sync"
+              }
+            ],
+            "channels": [
+              {
+                "channelId": "sync",
+                "kind": "sync",
+                "description": "XMTP sync inbox for SaySo Network registry messages.",
+                "inboxId": "xmtp_inbox_sayso_network_registry",
+                "contentTypes": [
+                  "sayso.network/registration-submit/1",
+                  "sayso.network/registration-result/1"
+                ]
+              }
+            ],
+            "paymentPolicies": []
+          },
+          "skills": [
+            {
+              "skillId": "sayso.protocol",
+              "name": "SaySo Protocol",
+              "version": "0.1.0",
+              "kind": "meta",
+              "imports": [],
+              "skill": {
+                "capabilities": [],
+                "contentTypes": [],
+                "channels": [],
+                "paymentPolicies": []
+              },
+              "content": "# SaySo Protocol\n\nMandatory meta protocol.",
+              "mediaType": "text/markdown"
+            },
+            {
+              "skillId": "sayso.network",
+              "name": "SaySo Network",
+              "version": "0.1.0",
+              "kind": "service",
+              "imports": [
+                {
+                  "skillId": "sayso.protocol",
+                  "version": "^0.1.0",
+                  "required": true
+                }
+              ],
+              "skill": {
+                "capabilities": [
+                  {
+                    "capabilityId": "sayso.network.register",
+                    "title": "Register agent",
+                    "description": "Register or update an agent in the SaySo Network registry.",
+                    "requestContentTypes": [
+                      "sayso.network/registration-submit/1"
+                    ],
+                    "responseContentTypes": [
+                      "sayso.network/registration-result/1"
+                    ],
+                    "channels": [
+                      "sync"
+                    ],
+                    "paymentPolicy": "none"
+                  }
+                ],
+                "contentTypes": [
+                  {
+                    "authorityId": "sayso.network",
+                    "typeId": "registration-submit",
+                    "versionMajor": 1,
+                    "versionMinor": 0,
+                    "purpose": "Register or update the sender's agent record.",
+                    "channel": "sync"
+                  },
+                  {
+                    "authorityId": "sayso.network",
+                    "typeId": "registration-result",
+                    "versionMajor": 1,
+                    "versionMinor": 0,
+                    "purpose": "Report registration acceptance or rejection.",
+                    "channel": "sync"
+                  }
+                ],
+                "channels": [],
+                "paymentPolicies": []
+              },
+              "content": "# SaySo Network\n\nCanonical SaySo Network registry service protocol.",
+              "mediaType": "text/markdown"
+            }
+          ],
+          "resolution": {
+            "mode": "all",
+            "includedSkillIds": [
+              "sayso.protocol",
+              "sayso.network"
+            ],
+            "dependencyOrder": [
+              "sayso.protocol",
+              "sayso.network"
+            ]
+          },
+          "content": "# SaySo Network Registry\n\nCanonical registry service for SaySo agents.",
+          "mediaType": "text/markdown"
+        }
+      }
+    },
+    {
+      "step": 3,
+      "sender": "agent",
+      "contentType": "sayso.protocol/connection-request/1",
+      "payload": {}
+    },
+    {
+      "step": 4,
+      "sender": "agent",
+      "contentType": "sayso.network/registration-submit/1",
+      "payloadRef": "../payloads/network/registration-submit-public-summary.json"
+    },
+    {
+      "step": 5,
+      "sender": "registry",
+      "contentType": "sayso.network/registration-result/1",
+      "payloadRef": "../payloads/network/registration-result-accepted.json"
+    }
+  ]
+}

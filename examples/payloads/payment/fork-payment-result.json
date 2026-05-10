@@ -1,0 +1,13 @@
+{
+  "requestId": "fork_req_paid_001",
+  "status": "settled",
+  "payer": "0x2222222222222222222222222222222222222222",
+  "transaction": "0xforkpayment",
+  "network": "eip155:8453",
+  "extensions": {
+    "sayso.fork": {
+      "offerId": "fork-paid-30d",
+      "forkId": "fork_paid_001"
+    }
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "proposalId": "upgrade_remove_extension_001",
+  "baseProtocolVersion": "0.1.0",
+  "baseSkillIds": [
+    "sayso.protocol",
+    "sayso.upgrade",
+    "sayso.reference-implementations"
+  ],
+  "skillChanges": [
+    {
+      "skillId": "sayso.protocol",
+      "operation": "keep",
+      "fromVersion": "0.1.0",
+      "toVersion": "0.1.0"
+    },
+    {
+      "skillId": "sayso.upgrade",
+      "operation": "keep",
+      "fromVersion": "0.1.0",
+      "toVersion": "0.1.0"
+    },
+    {
+      "skillId": "sayso.reference-implementations",
+      "operation": "remove",
+      "fromVersion": "0.1.0",
+      "reason": "Stop delivering reference implementation source in this conversation."
+    }
+  ],
+  "targetSkills": [
+    {
+      "skillId": "sayso.protocol",
+      "name": "SaySo Protocol",
+      "version": "0.1.0",
+      "kind": "meta",
+      "imports": [],
+      "skill": {
+        "capabilities": [],
+        "contentTypes": [
+          {
+            "authorityId": "sayso.protocol",
+            "typeId": "agent-info",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+            "channel": "sync"
+          }
+        ],
+        "channels": [],
+        "paymentPolicies": []
+      },
+      "content": "# SaySo Protocol\n\nMandatory meta protocol.",
+      "mediaType": "text/markdown"
+    },
+    {
+      "skillId": "sayso.upgrade",
+      "name": "SaySo Upgrades",
+      "version": "0.1.0",
+      "kind": "meta-extension",
+      "imports": [
+        {
+          "skillId": "sayso.protocol",
+          "version": "^0.1.0",
+          "required": true
+        }
+      ],
+      "skill": {
+        "capabilities": [],
+        "contentTypes": [
+          {
+            "authorityId": "sayso.protocol",
+            "typeId": "agent-info",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.upgrade",
+            "typeId": "upgrade-proposal",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Propose a replacement active skill bundle.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.upgrade",
+            "typeId": "upgrade-accept",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Accept an upgrade proposal.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.upgrade",
+            "typeId": "upgrade-reject",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Reject an upgrade proposal.",
+            "channel": "sync"
+          }
+        ],
+        "channels": [],
+        "paymentPolicies": []
+      },
+      "content": "# SaySo Upgrades\n\nOptional per-conversation skill bundle upgrade negotiation.",
+      "mediaType": "text/markdown"
+    }
+  ],
+  "targetResolution": {
+    "mode": "all",
+    "includedSkillIds": [
+      "sayso.protocol",
+      "sayso.upgrade"
+    ],
+    "dependencyOrder": [
+      "sayso.protocol",
+      "sayso.upgrade"
+    ]
+  },
+  "summary": "Remove the optional reference implementation extension.",
+  "targetMode": "sayso-bundle"
+}

@@ -1,0 +1,71 @@
+{
+  "requestId": "premium_reg_public_summary_001",
+  "x402Version": 1,
+  "resource": {
+    "url": "xmtp://sayso.payment/sayso-network-registry/requests/premium_reg_public_summary_001",
+    "description": "SaySo Network premium registration for sayso-demo-pong",
+    "mimeType": "application/json"
+  },
+  "accepts": [
+    {
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "amount": "100000",
+      "payTo": "0x1111111111111111111111111111111111111111",
+      "maxTimeoutSeconds": 300,
+      "extra": {
+        "name": "USDC",
+        "decimals": 6,
+        "chain": "Base"
+      }
+    },
+    {
+      "scheme": "exact",
+      "network": "eip155:480",
+      "asset": "USDC:<world-chain-token-address>",
+      "amount": "100000",
+      "payTo": "0x2222222222222222222222222222222222222222",
+      "maxTimeoutSeconds": 300,
+      "extra": {
+        "name": "USDC",
+        "decimals": 6,
+        "chain": "World Chain"
+      }
+    },
+    {
+      "scheme": "exact",
+      "network": "xrpl:mainnet",
+      "asset": "RLUSD:<xrpl-issuer>",
+      "amount": "100000",
+      "payTo": "rRegistryPayeeAddress",
+      "maxTimeoutSeconds": 300,
+      "extra": {
+        "name": "RLUSD",
+        "decimals": 6,
+        "chain": "XRPL"
+      }
+    },
+    {
+      "scheme": "exact",
+      "network": "stellar:pubnet",
+      "asset": "RLUSD:<stellar-issuer>",
+      "amount": "1000000",
+      "payTo": "GREGISTRYPAYEEADDRESS",
+      "maxTimeoutSeconds": 300,
+      "extra": {
+        "name": "RLUSD",
+        "decimals": 7,
+        "chain": "Stellar"
+      }
+    }
+  ],
+  "extensions": {
+    "sayso.network": {
+      "capabilityId": "sayso.network.premium-register",
+      "agentId": "sayso-demo-pong",
+      "termSeconds": 2592000
+    }
+  },
+  "reason": "Premium SaySo Network registration requires settled payment before activation."
+}

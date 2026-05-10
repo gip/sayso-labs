@@ -1,0 +1,31 @@
+{
+  "presentations": [
+    {
+      "type": "sayso.claim.world-id.wallet",
+      "payload": {
+        "wallet": {
+          "type": "ethereum",
+          "address": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"
+        },
+        "version": "world-id-4",
+        "proofType": "uniqueness",
+        "rpId": "rp_3bdf0788c0ae804c",
+        "action": "human",
+        "idkitResponse": {
+          "protocol_version": "4.0",
+          "nonce": "nonce_demo_001",
+          "action": "human",
+          "environment": "production",
+          "responses": [
+            {
+              "identifier": "orb",
+              "merkle_root": "0x2264a66d162d7893e12ea8e3c072c51e785bc085ad655f64c10c1a61e00f0bc2",
+              "nullifier": "0x2bf8406809dcefb1486dadc96c0a897db9bab002053054cf64272db512c6fbd8",
+              "proof": "0x1aa8b8f3b2d2de5ff452c0e1a83e29d6bf46fb83ef35dc5957121ff3d3698a1119090fb"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

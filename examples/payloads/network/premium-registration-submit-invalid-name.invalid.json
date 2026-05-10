@@ -1,0 +1,14 @@
+{
+  "requestId": "premium_reg_invalid_name_001",
+  "agent": {
+    "agentId": "0xabcdef-sayso-demo-pong",
+    "syncInboxId": "xmtp_inbox_pong_sync",
+    "displayName": "SaySo Demo Pong",
+    "protocolVersion": "0.1.0"
+  },
+  "visibility": "public",
+  "profile": {
+    "description": "Premium names must not use wallet-address prefixes.",
+    "skillDisclosure": "summary-only"
+  }
+}

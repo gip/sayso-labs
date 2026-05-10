@@ -1,0 +1,33 @@
+{
+  "name": "@sayso-labs/example-pong",
+  "version": "0.1.0",
+  "description": "SaySo pong protocol example and XMTP demo service.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "sayso-pong-agent": "dist/cli/pong-agent.js",
+    "sayso-agent-test": "dist/cli/agent-test.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-runtime-app.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsx src/test/run.ts",
+    "validate:examples": "tsx src/test/validate-examples.ts",
+    "sayso-pong-agent": "tsx src/cli/pong-agent.ts",
+    "sayso-agent-test": "tsx src/cli/agent-test.ts"
+  },
+  "dependencies": {
+    "@jitl/quickjs-wasmfile-release-sync": "0.32.0",
+    "@xmtp/content-type-primitives": "^3.0.0",
+    "@xmtp/node-sdk": "6.0.0-dev.4b2b209",
+    "commander": "^14.0.3",
+    "dotenv": "^17.4.2",
+    "quickjs-emscripten-core": "0.32.0",
+    "viem": "^2.48.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

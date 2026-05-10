@@ -1,0 +1,4 @@
+{
+  "implements": ["onchain.verify"],
+  "language": "javascript"
+}

@@ -1,0 +1,18 @@
+# SwiftPM
+.build/
+.swiftpm/
+Package.resolved
+
+# Xcode user and local build state
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+
+# App/package generated artifacts
+*.ipa
+*.xcarchive
+*.dSYM/
+
+# macOS
+.DS_Store

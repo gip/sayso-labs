@@ -1,0 +1,20 @@
+{
+  "requestId": "fork_req_free_001",
+  "status": "accepted",
+  "forkId": "fork_free_001",
+  "offerId": "fork-free-1h",
+  "provider": {
+    "providerId": "sayso-local",
+    "name": "SaySo Local",
+    "kind": "container",
+    "region": "local"
+  },
+  "validFrom": "2026-05-04T12:03:00.000Z",
+  "expiresAt": "2026-05-04T13:03:00.000Z",
+  "agent": {
+    "agentId": "agent_sayso_demo_fork_free_001",
+    "syncInboxId": "xmtp_inbox_fork_free_001",
+    "displayName": "Demo SaySo Agent Fork",
+    "protocolVersion": "0.1.0"
+  }
+}

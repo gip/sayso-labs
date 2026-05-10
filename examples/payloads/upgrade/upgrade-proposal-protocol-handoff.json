@@ -1,0 +1,42 @@
+{
+  "proposalId": "upgrade_handoff_agentmesh_001",
+  "targetMode": "protocol-handoff",
+  "baseProtocolVersion": "0.1.0",
+  "baseSkillIds": [
+    "sayso.protocol",
+    "sayso.upgrade",
+    "sayso.payment"
+  ],
+  "skillChanges": [
+    {
+      "skillId": "sayso.protocol",
+      "operation": "remove",
+      "fromVersion": "0.1.0",
+      "reason": "The accepted conversation will be governed by AgentMesh instead of SaySo."
+    },
+    {
+      "skillId": "sayso.upgrade",
+      "operation": "remove",
+      "fromVersion": "0.1.0",
+      "reason": "SaySo upgrade messages are not valid after handoff."
+    },
+    {
+      "skillId": "sayso.payment",
+      "operation": "remove",
+      "fromVersion": "0.1.0",
+      "reason": "The target protocol defines its own payment semantics."
+    }
+  ],
+  "handoffProtocol": {
+    "protocolId": "agentmesh.demo",
+    "version": "2026-05-01",
+    "transport": "xmtp",
+    "entryContentTypes": [
+      "agentmesh.demo/session-start/1"
+    ],
+    "description": "Demo non-SaySo protocol for this conversation after acceptance.",
+    "specificationUri": "https://example.com/agentmesh/demo/2026-05-01"
+  },
+  "summary": "Hand this conversation from SaySo to the AgentMesh demo protocol.",
+  "expiresAt": "2026-05-01T12:30:00Z"
+}

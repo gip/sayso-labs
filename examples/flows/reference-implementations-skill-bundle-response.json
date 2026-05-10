@@ -1,0 +1,445 @@
+{
+  "status": "ok",
+  "agent": {
+    "agentId": "agent_sayso_demo",
+    "kind": "service",
+    "syncInboxId": "xmtp_inbox_demo_sync",
+    "displayName": "Demo SaySo Agent",
+    "protocolVersion": "0.1.0"
+  },
+  "skill": {
+    "capabilities": [
+      {
+        "capabilityId": "sayso.connection",
+        "title": "SaySo connection",
+        "description": "Connect and read the current SaySo protocol version.",
+        "requestContentTypes": [
+          "sayso.protocol/connection-request/1"
+        ],
+        "responseContentTypes": [
+          "sayso.protocol/agent-info/1",
+          "sayso.protocol/connection-response/1"
+        ],
+        "channels": [
+          "sync"
+        ],
+        "paymentPolicy": "none"
+      },
+      {
+        "capabilityId": "onchain.verify",
+        "title": "Onchain verification",
+        "description": "Verify a target against onchain state.",
+        "requestContentTypes": [
+          "sayso.services.onchain-verifier/verify-request/1"
+        ],
+        "responseContentTypes": [
+          "sayso.services.onchain-verifier/verify-response/1"
+        ],
+        "channels": [
+          "sync"
+        ],
+        "paymentPolicy": "required"
+      },
+      {
+        "capabilityId": "reference-implementations.get",
+        "title": "Reference implementation delivery",
+        "description": "List and deliver reference implementations for advertised capabilities.",
+        "requestContentTypes": [
+          "sayso.reference-implementations/implementation-list-request/1",
+          "sayso.reference-implementations/implementation-request/1"
+        ],
+        "responseContentTypes": [
+          "sayso.reference-implementations/implementation-list-response/1",
+          "sayso.reference-implementations/implementation-response/1"
+        ],
+        "channels": [
+          "sync"
+        ],
+        "paymentPolicy": "none"
+      }
+    ],
+    "contentTypes": [
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "agent-info",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "connection-request",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Request SaySo connection with an empty JSON payload or optional claim presentations.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "connection-response",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Return SaySo protocol version and next step.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.services.onchain-verifier",
+        "typeId": "verify-request",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Request onchain verification.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.services.onchain-verifier",
+        "typeId": "verify-response",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Return onchain verification result.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.reference-implementations",
+        "typeId": "implementation-list-request",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Ask which reference implementations are available.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.reference-implementations",
+        "typeId": "implementation-list-response",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Return implementation descriptors.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.reference-implementations",
+        "typeId": "implementation-request",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Ask for a specific reference implementation.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.reference-implementations",
+        "typeId": "implementation-response",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Return inline implementation source or an error.",
+        "channel": "sync"
+      }
+    ],
+    "channels": [
+      {
+        "channelId": "sync",
+        "kind": "sync",
+        "description": "Public XMTP sync inbox for SaySo, service, and optional implementation messages.",
+        "inboxId": "xmtp_inbox_demo_sync",
+        "contentTypes": [
+          "sayso.protocol/agent-info/1",
+          "sayso.protocol/connection-request/1",
+          "sayso.protocol/connection-response/1",
+          "sayso.services.onchain-verifier/verify-request/1",
+          "sayso.services.onchain-verifier/verify-response/1",
+          "sayso.reference-implementations/implementation-list-request/1",
+          "sayso.reference-implementations/implementation-list-response/1",
+          "sayso.reference-implementations/implementation-request/1",
+          "sayso.reference-implementations/implementation-response/1"
+        ]
+      }
+    ],
+    "paymentPolicies": [
+      {
+        "policyId": "per-verification",
+        "capabilityIds": [
+          "onchain.verify"
+        ],
+        "required": true,
+        "terms": {
+          "pricing": "x402 exact payment per verification"
+        }
+      }
+    ]
+  },
+  "skills": [
+    {
+      "skillId": "sayso.protocol",
+      "name": "SaySo Protocol",
+      "version": "0.1.0",
+      "kind": "meta",
+      "imports": [],
+      "skill": {
+        "capabilities": [
+          {
+            "capabilityId": "sayso.connection",
+            "title": "SaySo connection",
+            "description": "Connect and read the current SaySo protocol version.",
+            "requestContentTypes": [
+              "sayso.protocol/connection-request/1"
+            ],
+            "responseContentTypes": [
+              "sayso.protocol/agent-info/1",
+              "sayso.protocol/connection-response/1"
+            ],
+            "channels": [
+              "sync"
+            ],
+            "paymentPolicy": "none"
+          }
+        ],
+        "contentTypes": [
+          {
+            "authorityId": "sayso.protocol",
+            "typeId": "agent-info",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+            "channel": "sync"
+          }
+        ],
+        "channels": [],
+        "paymentPolicies": []
+      },
+      "content": "# SaySo Protocol\n\nMandatory meta protocol.",
+      "mediaType": "text/markdown"
+    },
+    {
+      "skillId": "sayso.payment",
+      "name": "SaySo Payments",
+      "version": "0.1.0",
+      "kind": "payment",
+      "imports": [
+        {
+          "skillId": "sayso.protocol",
+          "version": "^0.1.0",
+          "required": true
+        }
+      ],
+      "skill": {
+        "capabilities": [
+          {
+            "capabilityId": "sayso.payment.negotiate",
+            "title": "Payment negotiation",
+            "description": "Negotiate x402-shaped payment requirements and settlement over XMTP.",
+            "requestContentTypes": [
+              "sayso.payment/payment-submit/1"
+            ],
+            "responseContentTypes": [
+              "sayso.payment/payment-required/1",
+              "sayso.payment/payment-result/1"
+            ],
+            "channels": [
+              "sync"
+            ],
+            "paymentPolicy": "none"
+          }
+        ],
+        "contentTypes": [
+          {
+            "authorityId": "sayso.protocol",
+            "typeId": "agent-info",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.payment",
+            "typeId": "payment-required",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Describe payment requirements for a request.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.payment",
+            "typeId": "payment-submit",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Submit an x402 payment payload.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.payment",
+            "typeId": "payment-result",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Report payment verification or settlement.",
+            "channel": "sync"
+          }
+        ],
+        "channels": [],
+        "paymentPolicies": []
+      },
+      "content": "# SaySo Payments\n\nOptional x402-shaped payment negotiation skill.",
+      "mediaType": "text/markdown"
+    },
+    {
+      "skillId": "sayso.services.onchain-verifier",
+      "name": "SaySo Onchain Verifier",
+      "version": "0.1.0",
+      "kind": "service",
+      "imports": [
+        {
+          "skillId": "sayso.protocol",
+          "version": "^0.1.0",
+          "required": true
+        },
+        {
+          "skillId": "sayso.payment",
+          "version": "^0.1.0",
+          "required": true
+        }
+      ],
+      "skill": {
+        "capabilities": [
+          {
+            "capabilityId": "onchain.verify",
+            "title": "Onchain verification",
+            "description": "Verify a target against onchain state.",
+            "requestContentTypes": [
+              "sayso.services.onchain-verifier/verify-request/1"
+            ],
+            "responseContentTypes": [
+              "sayso.services.onchain-verifier/verify-response/1"
+            ],
+            "channels": [
+              "sync"
+            ],
+            "paymentPolicy": "required"
+          }
+        ],
+        "contentTypes": [
+          {
+            "authorityId": "sayso.protocol",
+            "typeId": "agent-info",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+            "channel": "sync"
+          }
+        ],
+        "channels": [],
+        "paymentPolicies": [
+          {
+            "policyId": "per-verification",
+            "capabilityIds": [
+              "onchain.verify"
+            ],
+            "required": true,
+            "terms": {
+              "pricing": "x402 exact payment per verification"
+            }
+          }
+        ]
+      },
+      "content": "# SaySo Onchain Verifier\n\nVerifies a target against onchain state and charges per verification.",
+      "mediaType": "text/markdown"
+    },
+    {
+      "skillId": "sayso.reference-implementations",
+      "name": "SaySo Reference Implementations",
+      "version": "0.1.0",
+      "kind": "extension",
+      "imports": [
+        {
+          "skillId": "sayso.protocol",
+          "version": "^0.1.0",
+          "required": true
+        },
+        {
+          "skillId": "sayso.payment",
+          "version": "^0.1.0",
+          "required": true
+        }
+      ],
+      "skill": {
+        "capabilities": [
+          {
+            "capabilityId": "reference-implementations.get",
+            "title": "Reference implementation delivery",
+            "description": "List and deliver reference implementations for advertised capabilities.",
+            "requestContentTypes": [
+              "sayso.reference-implementations/implementation-list-request/1",
+              "sayso.reference-implementations/implementation-request/1"
+            ],
+            "responseContentTypes": [
+              "sayso.reference-implementations/implementation-list-response/1",
+              "sayso.reference-implementations/implementation-response/1"
+            ],
+            "channels": [
+              "sync"
+            ],
+            "paymentPolicy": "none"
+          }
+        ],
+        "contentTypes": [
+          {
+            "authorityId": "sayso.protocol",
+            "typeId": "agent-info",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Send agent identity, fallback text, and full current skill packet on connection.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.reference-implementations",
+            "typeId": "implementation-list-request",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Ask which reference implementations are available.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.reference-implementations",
+            "typeId": "implementation-list-response",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Return implementation descriptors.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.reference-implementations",
+            "typeId": "implementation-request",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Ask for a specific reference implementation.",
+            "channel": "sync"
+          },
+          {
+            "authorityId": "sayso.reference-implementations",
+            "typeId": "implementation-response",
+            "versionMajor": 1,
+            "versionMinor": 0,
+            "purpose": "Return inline implementation source or an error.",
+            "channel": "sync"
+          }
+        ],
+        "channels": [],
+        "paymentPolicies": []
+      },
+      "content": "# SaySo Reference Implementations\n\nOptional skill for listing and delivering reference implementation source.",
+      "mediaType": "text/markdown"
+    }
+  ],
+  "resolution": {
+    "mode": "all",
+    "includedSkillIds": [
+      "sayso.protocol",
+      "sayso.payment",
+      "sayso.services.onchain-verifier",
+      "sayso.reference-implementations"
+    ],
+    "dependencyOrder": [
+      "sayso.protocol",
+      "sayso.payment",
+      "sayso.services.onchain-verifier",
+      "sayso.reference-implementations"
+    ]
+  },
+  "content": "# Demo SaySo Agent\n\nThis response includes the optional reference implementations skill.",
+  "mediaType": "text/markdown"
+}

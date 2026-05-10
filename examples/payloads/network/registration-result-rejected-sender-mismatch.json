@@ -1,0 +1,8 @@
+{
+  "requestId": "network_reg_bad_sender_001",
+  "status": "rejected",
+  "error": {
+    "code": "sender-mismatch",
+    "message": "XMTP sender inbox does not match registration.agent.syncInboxId."
+  }
+}

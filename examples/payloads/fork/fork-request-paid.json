@@ -1,0 +1,13 @@
+{
+  "requestId": "fork_req_paid_001",
+  "offerId": "fork-paid-30d",
+  "configuration": [
+    {
+      "name": "OPENAI_API_KEY",
+      "value": "sk-fork-only"
+    }
+  ],
+  "requester": {
+    "syncInboxId": "xmtp_inbox_requester"
+  }
+}

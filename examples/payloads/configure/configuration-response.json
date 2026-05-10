@@ -1,0 +1,24 @@
+{
+  "requestId": "config_req_001",
+  "status": "ok",
+  "variables": [
+    {
+      "name": "PUBLIC_BASE_URL",
+      "visibility": "public",
+      "description": "Public HTTP endpoint for this agent.",
+      "valueType": "url",
+      "required": true,
+      "source": "environment",
+      "value": "https://agent.example"
+    },
+    {
+      "name": "OPENAI_API_KEY",
+      "visibility": "private",
+      "description": "Provider key required when the agent is forked.",
+      "valueType": "secret",
+      "required": true,
+      "source": "secret-store"
+    }
+  ],
+  "generatedAt": "2026-05-04T12:00:00.000Z"
+}

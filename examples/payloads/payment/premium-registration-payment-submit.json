@@ -1,0 +1,27 @@
+{
+  "requestId": "premium_reg_public_summary_001",
+  "payment": {
+    "x402Version": 1,
+    "resource": {
+      "url": "xmtp://sayso.payment/sayso-network-registry/requests/premium_reg_public_summary_001",
+      "description": "SaySo Network premium registration for sayso-demo-pong",
+      "mimeType": "application/json"
+    },
+    "accepted": {
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "amount": "100000",
+      "payTo": "0x1111111111111111111111111111111111111111",
+      "maxTimeoutSeconds": 300,
+      "extra": {
+        "name": "USDC",
+        "decimals": 6,
+        "chain": "Base"
+      }
+    },
+    "payload": {
+      "authorization": "0xpaymentpayload"
+    }
+  }
+}

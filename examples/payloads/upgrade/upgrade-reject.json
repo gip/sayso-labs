@@ -1,0 +1,5 @@
+{
+  "proposalId": "upgrade_replace_protocol_001",
+  "code": "policy",
+  "reason": "This client only accepts protocol patches after operator review."
+}

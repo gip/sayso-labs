@@ -1,0 +1,33 @@
+{
+  "name": "@sayso-labs/network-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:functional": "vitest run --config vitest.functional.config.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.1.0",
+    "@sayso-labs/db-postgres": "workspace:*",
+    "@sayso-labs/protocol": "workspace:*",
+    "@xmtp/content-type-primitives": "^3.0.1",
+    "@xmtp/node-sdk": "6.0.0-dev.4b2b209",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "dotenv": "^17.4.2",
+    "fastify": "^5.6.2",
+    "viem": "^2.48.6",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.8"
+  }
+}

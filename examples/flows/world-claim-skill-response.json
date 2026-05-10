@@ -1,0 +1,134 @@
+{
+  "status": "ok",
+  "agent": {
+    "agentId": "sayso-world-gated-agent",
+    "kind": "service",
+    "syncInboxId": "xmtp_inbox_world_gated_agent",
+    "displayName": "World Gated SaySo Agent",
+    "protocolVersion": "0.1.0"
+  },
+  "skill": {
+    "capabilities": [
+      {
+        "capabilityId": "sayso.connection",
+        "title": "SaySo connection",
+        "description": "Connect with optional SaySo World ID claim presentation.",
+        "requestContentTypes": [
+          "sayso.protocol/connection-request/1"
+        ],
+        "responseContentTypes": [
+          "sayso.protocol/connection-response/1"
+        ],
+        "channels": [
+          "sync"
+        ],
+        "paymentPolicy": "none",
+        "claimPolicy": {
+          "acceptedTypes": [
+            "sayso.claim.world-id.wallet"
+          ],
+          "required": true
+        }
+      }
+    ],
+    "contentTypes": [
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "connection-request",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Request SaySo connection with optional claim presentations.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.protocol",
+        "typeId": "connection-response",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Return SaySo protocol version, verified claims, or presentation verification error.",
+        "channel": "sync"
+      }
+    ],
+    "channels": [
+      {
+        "channelId": "sync",
+        "kind": "sync",
+        "description": "Public XMTP sync inbox for SaySo connection.",
+        "inboxId": "xmtp_inbox_world_gated_agent",
+        "contentTypes": [
+          "sayso.protocol/connection-request/1",
+          "sayso.protocol/connection-response/1"
+        ]
+      }
+    ],
+    "paymentPolicies": []
+  },
+  "skills": [
+    {
+      "skillId": "sayso.protocol",
+      "name": "SaySo Protocol",
+      "version": "0.1.0",
+      "kind": "meta",
+      "imports": [],
+      "skill": {
+        "capabilities": [],
+        "contentTypes": [],
+        "channels": [],
+        "paymentPolicies": []
+      },
+      "content": "# SaySo Protocol\n\nMandatory meta protocol.",
+      "mediaType": "text/markdown"
+    },
+    {
+      "skillId": "sayso.claim",
+      "name": "SaySo Claim",
+      "version": "0.1.0",
+      "kind": "claim",
+      "imports": [
+        {
+          "skillId": "sayso.protocol",
+          "version": "^0.1.0",
+          "required": true
+        }
+      ],
+      "skill": {
+        "capabilities": [
+          {
+            "capabilityId": "sayso.claim.world-id.wallet",
+            "title": "World ID wallet claim",
+            "description": "Verify a World ID 4 uniqueness proof for a wallet in connection-request/1.",
+            "requestContentTypes": [
+              "sayso.protocol/connection-request/1"
+            ],
+            "responseContentTypes": [
+              "sayso.protocol/connection-response/1"
+            ],
+            "channels": [
+              "sync"
+            ],
+            "paymentPolicy": "none",
+            "claimType": "sayso.claim.world-id.wallet"
+          }
+        ],
+        "contentTypes": [],
+        "channels": [],
+        "paymentPolicies": []
+      },
+      "content": "# SaySo Claim\n\nOptional claim presentation catalog for connection-request/1.",
+      "mediaType": "text/markdown"
+    }
+  ],
+  "resolution": {
+    "mode": "all",
+    "includedSkillIds": [
+      "sayso.protocol",
+      "sayso.claim"
+    ],
+    "dependencyOrder": [
+      "sayso.protocol",
+      "sayso.claim"
+    ]
+  },
+  "content": "# World Gated SaySo Agent\n\nRequires SaySo World ID for connection.",
+  "mediaType": "text/markdown"
+}

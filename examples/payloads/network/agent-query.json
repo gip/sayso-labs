@@ -1,0 +1,11 @@
+{
+  "requestId": "network_query_001",
+  "query": "pong",
+  "skillIds": [
+    "sayso.demo.pong"
+  ],
+  "capabilityIds": [
+    "pong.respond"
+  ],
+  "limit": 10
+}

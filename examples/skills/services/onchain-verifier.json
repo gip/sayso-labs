@@ -1,0 +1,96 @@
+{
+  "skillId": "sayso.services.onchain-verifier",
+  "name": "SaySo Onchain Verifier",
+  "version": "0.1.0",
+  "kind": "service",
+  "imports": [
+    {
+      "skillId": "sayso.protocol",
+      "version": "^0.1.0",
+      "required": true
+    },
+    {
+      "skillId": "sayso.payment",
+      "version": "^0.1.0",
+      "required": true
+    }
+  ],
+  "skill": {
+    "capabilities": [
+      {
+        "capabilityId": "onchain.verify",
+        "title": "Onchain verification",
+        "description": "Verify a target against onchain state.",
+        "requestContentTypes": [
+          "sayso.services.onchain-verifier/verify-request/1"
+        ],
+        "responseContentTypes": [
+          "sayso.services.onchain-verifier/verify-response/1"
+        ],
+        "channels": [
+          "sync"
+        ],
+        "paymentPolicy": "required",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "chainId",
+            "target"
+          ],
+          "properties": {
+            "chainId": {
+              "type": "string"
+            },
+            "target": {
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": {
+          "type": "object",
+          "required": [
+            "ok"
+          ],
+          "properties": {
+            "ok": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    ],
+    "contentTypes": [
+      {
+        "authorityId": "sayso.services.onchain-verifier",
+        "typeId": "verify-request",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Request onchain verification.",
+        "channel": "sync"
+      },
+      {
+        "authorityId": "sayso.services.onchain-verifier",
+        "typeId": "verify-response",
+        "versionMajor": 1,
+        "versionMinor": 0,
+        "purpose": "Return onchain verification result.",
+        "channel": "sync"
+      }
+    ],
+    "channels": [],
+    "paymentPolicies": [
+      {
+        "policyId": "per-verification",
+        "capabilityIds": [
+          "onchain.verify"
+        ],
+        "required": true,
+        "terms": {
+          "pricing": "x402 exact payment per verification"
+        }
+      }
+    ]
+  },
+  "content": "# SaySo Onchain Verifier\n\nVerifies a target against onchain state and charges per verification.",
+  "mediaType": "text/markdown"
+}
