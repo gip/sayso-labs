@@ -189,30 +189,68 @@ export type NetworkAgent = AgentInfo & {
   protocolVersion: string;
 };
 
-export type RegistrationSubmitPayload = {
+// Schema: sayso://sayso.network/common#/$defs/summaryOnlyProfile
+export type SummaryOnlyProfile = {
+  description: string;
+  skillDisclosure: "summary-only";
+};
+
+// Schema: sayso://sayso.network/common#/$defs/skillPacketProfile
+export type SkillPacketProfile = {
+  description: string;
+  skillDisclosure: "include-skill-packet";
+  skillPacket: SkillPacket;
+};
+
+// Schema: sayso://sayso.network/common#/$defs/privateProfile (oneOf the above)
+export type RegistrationProfile = SummaryOnlyProfile | SkillPacketProfile;
+
+// Schema: sayso://sayso.network/registration-submit/1 — 3-branch oneOf on
+// visibility × profile.skillDisclosure. Branches are spelled out individually
+// (not collapsed to `profile: SummaryOnly | SkillPacket`) so the drift sentinel
+// against the schema-generated union holds — TS does not narrow
+// `{ profile: A | B }` to `{ profile: A } | { profile: B }`.
+type RegistrationSubmitBase = {
   requestId: string;
   agent: NetworkAgent;
-  visibility: "private" | "public";
-  profile?: {
-    description?: string;
-    skillDisclosure: "summary-only" | "include-skill-packet";
-    skillPacket?: SkillPacket;
-  };
   expiresAt?: string;
   extensions?: Record<string, unknown>;
 };
 
-export type PremiumRegistrationSubmitPayload = {
+type PrivateRegistrationSubmit = RegistrationSubmitBase & {
+  visibility: "private";
+  profile?: RegistrationProfile;
+};
+
+type PublicSummaryRegistrationSubmit = RegistrationSubmitBase & {
+  visibility: "public";
+  profile: SummaryOnlyProfile;
+};
+
+type PublicSkillPacketRegistrationSubmit = RegistrationSubmitBase & {
+  visibility: "public";
+  profile: SkillPacketProfile;
+};
+
+export type RegistrationSubmitPayload =
+  | PrivateRegistrationSubmit
+  | PublicSummaryRegistrationSubmit
+  | PublicSkillPacketRegistrationSubmit;
+
+// Schema: sayso://sayso.network/premium-registration-submit/1 — 2-branch oneOf
+// on profile.skillDisclosure (always visibility="public"; no expiresAt).
+// `agent.agentId` additionally must match /^(?!0x)[a-z0-9](?:[a-z0-9-]{1,61}[a-z0-9])$/
+// — runtime-only (Ajv-enforced); not representable in TS template literal types.
+type PremiumRegistrationSubmitBase = {
   requestId: string;
   agent: NetworkAgent;
   visibility: "public";
-  profile: {
-    description: string;
-    skillDisclosure: "summary-only" | "include-skill-packet";
-    skillPacket?: SkillPacket;
-  };
   extensions?: Record<string, unknown>;
 };
+
+export type PremiumRegistrationSubmitPayload =
+  | (PremiumRegistrationSubmitBase & { profile: SummaryOnlyProfile })
+  | (PremiumRegistrationSubmitBase & { profile: SkillPacketProfile });
 
 export type RegistrationResultPayload =
   | {

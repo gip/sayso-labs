@@ -223,12 +223,8 @@ export class RegistryService {
     if (agentCollision && agentCollision.agent.syncInboxId !== sender.senderInboxId) {
       return registrationRejected(payload.requestId, "policy", "agentId is already registered by another sync inbox.");
     }
-    if (payload.visibility === "public" && !payload.profile?.description) {
-      return registrationRejected(payload.requestId, "malformed", "Public registrations require profile.description.");
-    }
-    if (payload.profile?.skillDisclosure === "include-skill-packet" && !payload.profile.skillPacket) {
-      return registrationRejected(payload.requestId, "malformed", "include-skill-packet registrations require profile.skillPacket.");
-    }
+    // Cross-field invariants (public ⇒ profile.description, include-skill-packet ⇒ skillPacket)
+    // are enforced upstream by parsePayload("registration-submit") via the SKILL.md schema.
     const record = await this.repository.upsertRegistrationBySyncInbox(registrationWriteFromSubmit(payload, sender.walletAddress));
     return {
       requestId: payload.requestId,

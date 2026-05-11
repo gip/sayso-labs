@@ -1,4 +1,9 @@
-import type { NetworkAgentRecord, RegistrationSubmitPayload, SkillPacket } from "./types.js";
+import type {
+  NetworkAgentRecord,
+  PremiumRegistrationSubmitPayload,
+  RegistrationSubmitPayload,
+  SkillPacket,
+} from "./types.js";
 
 export type RegistrationWrite = {
   agentId: string;
@@ -83,16 +88,12 @@ export const registrationWriteFromSubmit = (payload: RegistrationSubmitPayload, 
 };
 
 export const premiumRegistrationWriteFromSubmit = (
-  payload: RegistrationSubmitPayload,
+  payload: PremiumRegistrationSubmitPayload,
   walletAddress: string,
   premiumExpiresAt: Date,
 ): RegistrationWrite => ({
   ...registrationWriteFromSubmit(
-    {
-      ...payload,
-      visibility: "public",
-      expiresAt: premiumExpiresAt.toISOString(),
-    },
+    { ...payload, expiresAt: premiumExpiresAt.toISOString() },
     walletAddress,
   ),
   listingTier: "premium",

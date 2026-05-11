@@ -143,26 +143,30 @@ const sender = (senderInboxId = "inbox_public", walletAddress = "0xabcdefabcdefa
   walletAddress,
 });
 
-const publicSubmit = (overrides: Partial<RegistrationSubmitPayload> = {}): RegistrationSubmitPayload => ({
-  requestId: "req_1",
-  agent: {
-    agentId: "agent_public",
-    syncInboxId: "inbox_public",
-    displayName: "Public Agent",
-    protocolVersion: "0.1.0",
-  },
-  visibility: "public",
-  profile: {
-    description: "A public SaySo agent",
-    skillDisclosure: "include-skill-packet",
-    skillPacket: createNetworkSkillPacket({
+const publicSubmit = (overrides: Partial<RegistrationSubmitPayload> = {}): RegistrationSubmitPayload =>
+  // Spread over a discriminated union widens `visibility` and `profile` so TS
+  // can't narrow back to a single branch. The cast is safe because the test
+  // call sites never override visibility to something inconsistent with profile.
+  ({
+    requestId: "req_1",
+    agent: {
       agentId: "agent_public",
       syncInboxId: "inbox_public",
       displayName: "Public Agent",
-    }),
-  },
-  ...overrides,
-});
+      protocolVersion: "0.1.0",
+    },
+    visibility: "public",
+    profile: {
+      description: "A public SaySo agent",
+      skillDisclosure: "include-skill-packet",
+      skillPacket: createNetworkSkillPacket({
+        agentId: "agent_public",
+        syncInboxId: "inbox_public",
+        displayName: "Public Agent",
+      }),
+    },
+    ...overrides,
+  }) as RegistrationSubmitPayload;
 
 const premiumSubmit = (agentId = "premium-agent"): PremiumRegistrationSubmitPayload => ({
   requestId: `premium_${agentId}`,

@@ -84,13 +84,8 @@ const _disconnectFwd: AssertAssignable<DisconnectPayload, DisconnectPayloadSchem
 const _forgetMeFwd: AssertAssignable<ForgetMePayload, ForgetMePayloadSchema> = true;
 const _disconnectAckFwd: AssertAssignable<DisconnectAckPayload, DisconnectAckPayloadSchema> = true;
 const _errorFwd: AssertAssignable<ErrorPayload, ErrorPayloadSchema> = true;
-// FIXME(drift): hand-written type is wider than the schema's 4-branch discriminated union
-// (visibility × skillDisclosure). Tighten to match `oneOf` branches in
-// skills/sayso-network/SKILL.md#schema-sayso-network-registration-submit-1. Runtime safety is
-// still enforced by Ajv via parsePayload("registration-submit", ...).
-// const _registrationSubmitFwd: AssertAssignable<RegistrationSubmitPayload, RegistrationSubmitPayloadSchema> = true;
-// FIXME(drift): same as registration-submit. See premium-registration-submit/1 schema.
-// const _premiumRegistrationSubmitFwd: AssertAssignable<PremiumRegistrationSubmitPayload, PremiumRegistrationSubmitPayloadSchema> = true;
+const _registrationSubmitFwd: AssertAssignable<RegistrationSubmitPayload, RegistrationSubmitPayloadSchema> = true;
+const _premiumRegistrationSubmitFwd: AssertAssignable<PremiumRegistrationSubmitPayload, PremiumRegistrationSubmitPayloadSchema> = true;
 const _registrationResultFwd: AssertAssignable<RegistrationResultPayload, RegistrationResultPayloadSchema> = true;
 const _registrationRemoveFwd: AssertAssignable<RegistrationRemovePayload, RegistrationRemovePayloadSchema> = true;
 const _agentQueryFwd: AssertAssignable<AgentQueryPayload, AgentQueryPayloadSchema> = true;
@@ -122,6 +117,8 @@ export {
   _forgetMeFwd,
   _disconnectAckFwd,
   _errorFwd,
+  _registrationSubmitFwd,
+  _premiumRegistrationSubmitFwd,
   _registrationResultFwd,
   _registrationRemoveFwd,
   _agentQueryFwd,
