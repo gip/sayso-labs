@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { config as loadDotenv } from "dotenv";
 import { z } from "zod";
+import type { NonEmptyArray } from "@sayso-labs/protocol";
 import type { PremiumRegistrationPaymentConfig, PremiumRegistrationPaymentOption } from "../registry/payment.js";
 
 export type RegistryEnvironment = "dev" | "production";
@@ -140,6 +141,11 @@ const buildXmtpCredentials = (parsed: z.infer<typeof envSchema>): Record<Registr
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
+const asNonEmpty = <T>(items: T[]): NonEmptyArray<T> | null => {
+  const [first, ...rest] = items;
+  return first === undefined ? null : [first, ...rest];
+};
+
 const parsePaymentOptions = (parsed: z.infer<typeof envSchema>): PremiumRegistrationPaymentOption[] => {
   if (!parsed.PREMIUM_REGISTRATION_PAYMENT_OPTIONS) {
     if (!parsed.PREMIUM_REGISTRATION_PAY_TO) return [];
@@ -150,13 +156,11 @@ const parsePaymentOptions = (parsed: z.infer<typeof envSchema>): PremiumRegistra
         asset: parsed.PREMIUM_REGISTRATION_ASSET,
         amount: parsed.PREMIUM_REGISTRATION_AMOUNT,
         payTo: parsed.PREMIUM_REGISTRATION_PAY_TO,
-        extra: {
-          name: "USDC",
-          decimals: 6,
-        },
+        extra: { name: "USDC", decimals: 6 },
       },
     ];
   }
+
 
   let value: unknown;
   try {
@@ -195,7 +199,7 @@ const parsePaymentOptions = (parsed: z.infer<typeof envSchema>): PremiumRegistra
 export const loadConfig = (env = process.env): BackendConfig => {
   const parsed = envSchema.parse(env);
   const databaseUrls = buildDatabaseUrls(parsed);
-  const paymentOptions = parsed.PREMIUM_REGISTRATION_ENABLED ? parsePaymentOptions(parsed) : [];
+  const paymentOptions = parsed.PREMIUM_REGISTRATION_ENABLED ? asNonEmpty(parsePaymentOptions(parsed)) : null;
   return {
     databaseUrls,
     enabledEnvironments: registryEnvironments.filter((environment) => Boolean(databaseUrls[environment])),
@@ -208,7 +212,7 @@ export const loadConfig = (env = process.env): BackendConfig => {
     worldIdAction: parsed.WORLD_ID_ACTION,
     worldIdVerifyBaseUrl: parsed.WORLD_ID_VERIFY_BASE_URL,
     startXmtp: parsed.START_XMTP ?? true,
-    premiumRegistration: parsed.PREMIUM_REGISTRATION_ENABLED && paymentOptions.length > 0 && parsed.PREMIUM_REGISTRATION_VERIFY_URL
+    premiumRegistration: parsed.PREMIUM_REGISTRATION_ENABLED && paymentOptions && parsed.PREMIUM_REGISTRATION_VERIFY_URL
       ? {
           enabled: true,
           x402Version: 1,

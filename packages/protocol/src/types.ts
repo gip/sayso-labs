@@ -1,5 +1,7 @@
 export type XmtpEnv = "local" | "dev" | "production";
 
+export type NonEmptyArray<T> = [T, ...T[]];
+
 export type ProtocolError = {
   code:
     | "unknown-type"
@@ -303,7 +305,7 @@ export type PaymentRequiredPayload = {
   requestId: string;
   x402Version: number;
   resource: X402ResourceInfo;
-  accepts: X402PaymentRequirements[];
+  accepts: NonEmptyArray<X402PaymentRequirements>;
   extensions?: Record<string, unknown>;
   reason?: string;
 };

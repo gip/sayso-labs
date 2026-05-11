@@ -1,4 +1,5 @@
 import type {
+  NonEmptyArray,
   PaymentRequiredPayload,
   PaymentResultPayload,
   PaymentSubmitPayload,
@@ -19,7 +20,7 @@ export type PremiumRegistrationPaymentOption = {
 export type PremiumRegistrationPaymentConfig = {
   enabled: boolean;
   x402Version: number;
-  paymentOptions: PremiumRegistrationPaymentOption[];
+  paymentOptions: NonEmptyArray<PremiumRegistrationPaymentOption>;
   maxTimeoutSeconds: number;
   termSeconds: number;
 };
@@ -43,8 +44,10 @@ export const paymentResourceFor = (agentId: string, requestId: string, descripti
   mimeType: "application/json",
 });
 
-export const paymentRequirementsFor = (config: PremiumRegistrationPaymentConfig): X402PaymentRequirements[] =>
-  config.paymentOptions.map((option) => ({
+export const paymentRequirementsFor = (
+  config: PremiumRegistrationPaymentConfig,
+): NonEmptyArray<X402PaymentRequirements> => {
+  const toRequirement = (option: PremiumRegistrationPaymentOption): X402PaymentRequirements => ({
     scheme: option.scheme,
     network: option.network,
     asset: option.asset,
@@ -52,7 +55,10 @@ export const paymentRequirementsFor = (config: PremiumRegistrationPaymentConfig)
     payTo: option.payTo,
     maxTimeoutSeconds: option.maxTimeoutSeconds ?? config.maxTimeoutSeconds,
     extra: option.extra,
-  }));
+  });
+  const [first, ...rest] = config.paymentOptions;
+  return [toRequirement(first), ...rest.map(toRequirement)];
+};
 
 export const canonicalJson = (value: unknown): string => {
   if (value === undefined) return "undefined";

@@ -3,625 +3,53 @@
 // Source of truth: JSON Schemas in skills/sayso-*/SKILL.md.
 // Do not edit by hand. Run `pnpm --filter @sayso-labs/protocol gen:types` to regenerate.
 
-export interface AgentInfoPayloadSchema {
-  protocolVersion: string;
-  supportedProtocolVersions: string[];
-  agent: {
-    agentId: string;
-    syncInboxId: string;
-    displayName: string;
-  };
-  fallbackText: string;
-  skillPacket: {
-    agent: {
-      agentId: string;
-      kind: string;
-      syncInboxId: string;
-      displayName: string;
-      protocolVersion: string;
-    };
-    skill: {
-      capabilities: {
-        capabilityId: string;
-        title: string;
-        description: string;
-        requestContentTypes: string[];
-        responseContentTypes: string[];
-        channels: string[];
-        paymentPolicy: string;
-        inputSchema?: {
-          [k: string]: unknown;
-        };
-        outputSchema?: {
-          [k: string]: unknown;
-        };
-        [k: string]: unknown;
-      }[];
-      contentTypes: {
-        authorityId: string;
-        typeId: string;
-        versionMajor: number;
-        versionMinor?: number;
-        purpose: string;
-        channel?: string;
-      }[];
-      channels: {
-        channelId: string;
-        kind: string;
-        description: string;
-        inboxId?: string;
-        conversationId?: string;
-        contentTypes?: string[];
-      }[];
-      paymentPolicies: {
-        policyId: string;
-        capabilityIds: string[];
-        required: boolean;
-        terms: {
-          [k: string]: unknown;
-        };
-      }[];
-      [k: string]: unknown;
-    };
-    skills: {
-      skillId: string;
-      name: string;
-      version: string;
-      kind: string;
-      imports: {
-        skillId: string;
-        version: string;
-        required?: boolean;
-      }[];
-      skill: {
-        capabilities: {
-          capabilityId: string;
-          title: string;
-          description: string;
-          requestContentTypes: string[];
-          responseContentTypes: string[];
-          channels: string[];
-          paymentPolicy: string;
-          inputSchema?: {
-            [k: string]: unknown;
-          };
-          outputSchema?: {
-            [k: string]: unknown;
-          };
-          [k: string]: unknown;
-        }[];
-        contentTypes: {
-          authorityId: string;
-          typeId: string;
-          versionMajor: number;
-          versionMinor?: number;
-          purpose: string;
-          channel?: string;
-        }[];
-        channels: {
-          channelId: string;
-          kind: string;
-          description: string;
-          inboxId?: string;
-          conversationId?: string;
-          contentTypes?: string[];
-        }[];
-        paymentPolicies: {
-          policyId: string;
-          capabilityIds: string[];
-          required: boolean;
-          terms: {
-            [k: string]: unknown;
-          };
-        }[];
-        [k: string]: unknown;
-      };
-      content: string;
-      mediaType: string;
-    }[];
-    resolution: {
-      mode: "resolved" | "skills" | "all";
-      requestedSkillIds?: string[];
-      includedSkillIds: string[];
-      dependencyOrder: string[];
-    };
-    content: string;
-    mediaType: string;
-  };
-}
-
-export interface ConnectionRequestPayloadSchema {
-  presentations?: {
-    type: string;
-    payload: {
-      [k: string]: unknown;
-    };
-  }[];
-}
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "connectionResponsePayloadSchema".
+ */
 export type ConnectionResponsePayloadSchema =
   | {
       status: "ok";
       protocolVersion: string;
       supportedProtocolVersions: string[];
-      agent: {
-        agentId: string;
-        syncInboxId: string;
-        displayName: string;
-      };
+      agent: ProtocolAgentInfoSchema;
       next: string;
-      skillPacket: {
-        agent: {
-          agentId: string;
-          kind: string;
-          syncInboxId: string;
-          displayName: string;
-          protocolVersion: string;
-        };
-        skill: {
-          capabilities: {
-            capabilityId: string;
-            title: string;
-            description: string;
-            requestContentTypes: string[];
-            responseContentTypes: string[];
-            channels: string[];
-            paymentPolicy: string;
-            inputSchema?: {
-              [k: string]: unknown;
-            };
-            outputSchema?: {
-              [k: string]: unknown;
-            };
-            [k: string]: unknown;
-          }[];
-          contentTypes: {
-            authorityId: string;
-            typeId: string;
-            versionMajor: number;
-            versionMinor?: number;
-            purpose: string;
-            channel?: string;
-          }[];
-          channels: {
-            channelId: string;
-            kind: string;
-            description: string;
-            inboxId?: string;
-            conversationId?: string;
-            contentTypes?: string[];
-          }[];
-          paymentPolicies: {
-            policyId: string;
-            capabilityIds: string[];
-            required: boolean;
-            terms: {
-              [k: string]: unknown;
-            };
-          }[];
-          [k: string]: unknown;
-        };
-        skills: {
-          skillId: string;
-          name: string;
-          version: string;
-          kind: string;
-          imports: {
-            skillId: string;
-            version: string;
-            required?: boolean;
-          }[];
-          skill: {
-            capabilities: {
-              capabilityId: string;
-              title: string;
-              description: string;
-              requestContentTypes: string[];
-              responseContentTypes: string[];
-              channels: string[];
-              paymentPolicy: string;
-              inputSchema?: {
-                [k: string]: unknown;
-              };
-              outputSchema?: {
-                [k: string]: unknown;
-              };
-              [k: string]: unknown;
-            }[];
-            contentTypes: {
-              authorityId: string;
-              typeId: string;
-              versionMajor: number;
-              versionMinor?: number;
-              purpose: string;
-              channel?: string;
-            }[];
-            channels: {
-              channelId: string;
-              kind: string;
-              description: string;
-              inboxId?: string;
-              conversationId?: string;
-              contentTypes?: string[];
-            }[];
-            paymentPolicies: {
-              policyId: string;
-              capabilityIds: string[];
-              required: boolean;
-              terms: {
-                [k: string]: unknown;
-              };
-            }[];
-            [k: string]: unknown;
-          };
-          content: string;
-          mediaType: string;
-        }[];
-        resolution: {
-          mode: "resolved" | "skills" | "all";
-          requestedSkillIds?: string[];
-          includedSkillIds: string[];
-          dependencyOrder: string[];
-        };
-        content: string;
-        mediaType: string;
-      };
-      verifiedClaims?: {
-        type: string;
-        subject?: {
-          [k: string]: unknown;
-        };
-        status: "verified";
-        verifiedAt: string;
-        expiresAt?: string;
-        issuer?: string;
-        payload?: {
-          [k: string]: unknown;
-        };
-      }[];
+      skillPacket: ProtocolSkillPacketSchema;
+      verifiedClaims?: ProtocolVerifiedClaimSchema[];
     }
   | {
       status: "error";
       supportedProtocolVersions?: string[];
-      error: {
-        code:
-          | "unknown-type"
-          | "malformed"
-          | "request-expired"
-          | "not-supported"
-          | "not-connected"
-          | "presentation-unsupported"
-          | "presentation-malformed"
-          | "presentation-verification-failed"
-          | "conflict"
-          | "internal";
-        message: string;
-      };
+      error: ProtocolProtocolErrorSchema;
     };
-
-export interface SkillRequestPayloadSchema {
-  include?: "resolved" | "skills" | "all";
-  skillIds?: string[];
-  maxDepth?: number;
-}
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "skillResponsePayloadSchema".
+ */
 export type SkillResponsePayloadSchema =
   | {
       status: "ok";
-      agent: {
-        agentId: string;
-        kind: string;
-        syncInboxId: string;
-        displayName: string;
-        protocolVersion: string;
-      };
-      skill: {
-        capabilities: {
-          capabilityId: string;
-          title: string;
-          description: string;
-          requestContentTypes: string[];
-          responseContentTypes: string[];
-          channels: string[];
-          paymentPolicy: string;
-          inputSchema?: {
-            [k: string]: unknown;
-          };
-          outputSchema?: {
-            [k: string]: unknown;
-          };
-          [k: string]: unknown;
-        }[];
-        contentTypes: {
-          authorityId: string;
-          typeId: string;
-          versionMajor: number;
-          versionMinor?: number;
-          purpose: string;
-          channel?: string;
-        }[];
-        channels: {
-          channelId: string;
-          kind: string;
-          description: string;
-          inboxId?: string;
-          conversationId?: string;
-          contentTypes?: string[];
-        }[];
-        paymentPolicies: {
-          policyId: string;
-          capabilityIds: string[];
-          required: boolean;
-          terms: {
-            [k: string]: unknown;
-          };
-        }[];
-        [k: string]: unknown;
-      };
-      skills?: {
-        skillId: string;
-        name: string;
-        version: string;
-        kind: string;
-        imports: {
-          skillId: string;
-          version: string;
-          required?: boolean;
-        }[];
-        skill: {
-          capabilities: {
-            capabilityId: string;
-            title: string;
-            description: string;
-            requestContentTypes: string[];
-            responseContentTypes: string[];
-            channels: string[];
-            paymentPolicy: string;
-            inputSchema?: {
-              [k: string]: unknown;
-            };
-            outputSchema?: {
-              [k: string]: unknown;
-            };
-            [k: string]: unknown;
-          }[];
-          contentTypes: {
-            authorityId: string;
-            typeId: string;
-            versionMajor: number;
-            versionMinor?: number;
-            purpose: string;
-            channel?: string;
-          }[];
-          channels: {
-            channelId: string;
-            kind: string;
-            description: string;
-            inboxId?: string;
-            conversationId?: string;
-            contentTypes?: string[];
-          }[];
-          paymentPolicies: {
-            policyId: string;
-            capabilityIds: string[];
-            required: boolean;
-            terms: {
-              [k: string]: unknown;
-            };
-          }[];
-          [k: string]: unknown;
-        };
-        content: string;
-        mediaType: string;
-      }[];
-      resolution?: {
-        mode: "resolved" | "skills" | "all";
-        requestedSkillIds?: string[];
-        includedSkillIds: string[];
-        dependencyOrder: string[];
-      };
+      agent: ProtocolSkillPacketAgentSchema;
+      skill: ProtocolAgentSkillContractSchema;
+      skills?: ProtocolSaysoSkillDocumentSchema[];
+      resolution?: ProtocolSkillResolutionSchema;
       content: string;
       mediaType: string;
     }
   | {
       status: "error";
-      error: {
-        code:
-          | "unknown-type"
-          | "malformed"
-          | "request-expired"
-          | "not-supported"
-          | "not-connected"
-          | "presentation-unsupported"
-          | "presentation-malformed"
-          | "presentation-verification-failed"
-          | "conflict"
-          | "internal";
-        message: string;
-      };
+      error: ProtocolProtocolErrorSchema;
     };
-
-export interface DisconnectPayloadSchema {
-  reason?: string;
-}
-
-export interface ForgetMePayloadSchema {
-  reason?: string;
-}
-
-export interface DisconnectAckPayloadSchema {
-  action: "disconnect" | "forget-me";
-  status: "ok" | "partial" | "error";
-  details?: {
-    [k: string]: unknown;
-  };
-  error?: {
-    code:
-      | "unknown-type"
-      | "malformed"
-      | "request-expired"
-      | "not-supported"
-      | "not-connected"
-      | "presentation-unsupported"
-      | "presentation-malformed"
-      | "presentation-verification-failed"
-      | "conflict"
-      | "internal";
-    message: string;
-  };
-}
-
-export interface ErrorPayloadSchema {
-  code:
-    | "unknown-type"
-    | "malformed"
-    | "request-expired"
-    | "not-supported"
-    | "not-connected"
-    | "presentation-unsupported"
-    | "presentation-malformed"
-    | "presentation-verification-failed"
-    | "conflict"
-    | "internal";
-  message: string;
-  requestId?: string;
-}
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "registrationSubmitPayloadSchema".
+ */
 export type RegistrationSubmitPayloadSchema =
   | {
       requestId: string;
-      agent: {
-        agentId: string;
-        syncInboxId: string;
-        displayName: string;
-        protocolVersion: string;
-      };
+      agent: NetworkNetworkAgentSchema;
       visibility: "private";
-      profile?:
-        | {
-            description: string;
-            skillDisclosure: "summary-only";
-          }
-        | {
-            description: string;
-            skillDisclosure: "include-skill-packet";
-            skillPacket: {
-              agent: {
-                agentId: string;
-                kind: string;
-                syncInboxId: string;
-                displayName: string;
-                protocolVersion: string;
-              };
-              skill: {
-                capabilities: {
-                  capabilityId: string;
-                  title: string;
-                  description: string;
-                  requestContentTypes: string[];
-                  responseContentTypes: string[];
-                  channels: string[];
-                  paymentPolicy: string;
-                  inputSchema?: {
-                    [k: string]: unknown;
-                  };
-                  outputSchema?: {
-                    [k: string]: unknown;
-                  };
-                  [k: string]: unknown;
-                }[];
-                contentTypes: {
-                  authorityId: string;
-                  typeId: string;
-                  versionMajor: number;
-                  versionMinor?: number;
-                  purpose: string;
-                  channel?: string;
-                }[];
-                channels: {
-                  channelId: string;
-                  kind: string;
-                  description: string;
-                  inboxId?: string;
-                  conversationId?: string;
-                  contentTypes?: string[];
-                }[];
-                paymentPolicies: {
-                  policyId: string;
-                  capabilityIds: string[];
-                  required: boolean;
-                  terms: {
-                    [k: string]: unknown;
-                  };
-                }[];
-                [k: string]: unknown;
-              };
-              skills: {
-                skillId: string;
-                name: string;
-                version: string;
-                kind: string;
-                imports: {
-                  skillId: string;
-                  version: string;
-                  required?: boolean;
-                }[];
-                skill: {
-                  capabilities: {
-                    capabilityId: string;
-                    title: string;
-                    description: string;
-                    requestContentTypes: string[];
-                    responseContentTypes: string[];
-                    channels: string[];
-                    paymentPolicy: string;
-                    inputSchema?: {
-                      [k: string]: unknown;
-                    };
-                    outputSchema?: {
-                      [k: string]: unknown;
-                    };
-                    [k: string]: unknown;
-                  }[];
-                  contentTypes: {
-                    authorityId: string;
-                    typeId: string;
-                    versionMajor: number;
-                    versionMinor?: number;
-                    purpose: string;
-                    channel?: string;
-                  }[];
-                  channels: {
-                    channelId: string;
-                    kind: string;
-                    description: string;
-                    inboxId?: string;
-                    conversationId?: string;
-                    contentTypes?: string[];
-                  }[];
-                  paymentPolicies: {
-                    policyId: string;
-                    capabilityIds: string[];
-                    required: boolean;
-                    terms: {
-                      [k: string]: unknown;
-                    };
-                  }[];
-                  [k: string]: unknown;
-                };
-                content: string;
-                mediaType: string;
-              }[];
-              resolution: {
-                mode: "resolved" | "skills" | "all";
-                requestedSkillIds?: string[];
-                includedSkillIds: string[];
-                dependencyOrder: string[];
-              };
-              content: string;
-              mediaType: string;
-            };
-          };
+      profile?: NetworkPrivateProfileSchema;
       expiresAt?: string;
       extensions?: {
         [k: string]: unknown;
@@ -629,17 +57,9 @@ export type RegistrationSubmitPayloadSchema =
     }
   | {
       requestId: string;
-      agent: {
-        agentId: string;
-        syncInboxId: string;
-        displayName: string;
-        protocolVersion: string;
-      };
+      agent: NetworkNetworkAgentSchema;
       visibility: "public";
-      profile: {
-        description: string;
-        skillDisclosure: "summary-only";
-      };
+      profile: NetworkSummaryOnlyProfileSchema;
       expiresAt?: string;
       extensions?: {
         [k: string]: unknown;
@@ -647,291 +67,46 @@ export type RegistrationSubmitPayloadSchema =
     }
   | {
       requestId: string;
-      agent: {
-        agentId: string;
-        syncInboxId: string;
-        displayName: string;
-        protocolVersion: string;
-      };
+      agent: NetworkNetworkAgentSchema;
       visibility: "public";
-      profile: {
-        description: string;
-        skillDisclosure: "include-skill-packet";
-        skillPacket: {
-          agent: {
-            agentId: string;
-            kind: string;
-            syncInboxId: string;
-            displayName: string;
-            protocolVersion: string;
-          };
-          skill: {
-            capabilities: {
-              capabilityId: string;
-              title: string;
-              description: string;
-              requestContentTypes: string[];
-              responseContentTypes: string[];
-              channels: string[];
-              paymentPolicy: string;
-              inputSchema?: {
-                [k: string]: unknown;
-              };
-              outputSchema?: {
-                [k: string]: unknown;
-              };
-              [k: string]: unknown;
-            }[];
-            contentTypes: {
-              authorityId: string;
-              typeId: string;
-              versionMajor: number;
-              versionMinor?: number;
-              purpose: string;
-              channel?: string;
-            }[];
-            channels: {
-              channelId: string;
-              kind: string;
-              description: string;
-              inboxId?: string;
-              conversationId?: string;
-              contentTypes?: string[];
-            }[];
-            paymentPolicies: {
-              policyId: string;
-              capabilityIds: string[];
-              required: boolean;
-              terms: {
-                [k: string]: unknown;
-              };
-            }[];
-            [k: string]: unknown;
-          };
-          skills: {
-            skillId: string;
-            name: string;
-            version: string;
-            kind: string;
-            imports: {
-              skillId: string;
-              version: string;
-              required?: boolean;
-            }[];
-            skill: {
-              capabilities: {
-                capabilityId: string;
-                title: string;
-                description: string;
-                requestContentTypes: string[];
-                responseContentTypes: string[];
-                channels: string[];
-                paymentPolicy: string;
-                inputSchema?: {
-                  [k: string]: unknown;
-                };
-                outputSchema?: {
-                  [k: string]: unknown;
-                };
-                [k: string]: unknown;
-              }[];
-              contentTypes: {
-                authorityId: string;
-                typeId: string;
-                versionMajor: number;
-                versionMinor?: number;
-                purpose: string;
-                channel?: string;
-              }[];
-              channels: {
-                channelId: string;
-                kind: string;
-                description: string;
-                inboxId?: string;
-                conversationId?: string;
-                contentTypes?: string[];
-              }[];
-              paymentPolicies: {
-                policyId: string;
-                capabilityIds: string[];
-                required: boolean;
-                terms: {
-                  [k: string]: unknown;
-                };
-              }[];
-              [k: string]: unknown;
-            };
-            content: string;
-            mediaType: string;
-          }[];
-          resolution: {
-            mode: "resolved" | "skills" | "all";
-            requestedSkillIds?: string[];
-            includedSkillIds: string[];
-            dependencyOrder: string[];
-          };
-          content: string;
-          mediaType: string;
-        };
-      };
+      profile: NetworkSkillPacketProfileSchema;
       expiresAt?: string;
       extensions?: {
         [k: string]: unknown;
       };
     };
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "networkPrivateProfileSchema".
+ */
+export type NetworkPrivateProfileSchema = NetworkSummaryOnlyProfileSchema | NetworkSkillPacketProfileSchema;
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "premiumRegistrationSubmitPayloadSchema".
+ */
 export type PremiumRegistrationSubmitPayloadSchema =
   | {
       requestId: string;
-      agent: {
-        agentId: string;
-        syncInboxId: string;
-        displayName: string;
-        protocolVersion: string;
-      };
+      agent: NetworkPremiumNetworkAgentSchema;
       visibility: "public";
-      profile: {
-        description: string;
-        skillDisclosure: "summary-only";
-      };
+      profile: NetworkSummaryOnlyProfileSchema;
       extensions?: {
         [k: string]: unknown;
       };
     }
   | {
       requestId: string;
-      agent: {
-        agentId: string;
-        syncInboxId: string;
-        displayName: string;
-        protocolVersion: string;
-      };
+      agent: NetworkPremiumNetworkAgentSchema;
       visibility: "public";
-      profile: {
-        description: string;
-        skillDisclosure: "include-skill-packet";
-        skillPacket: {
-          agent: {
-            agentId: string;
-            kind: string;
-            syncInboxId: string;
-            displayName: string;
-            protocolVersion: string;
-          };
-          skill: {
-            capabilities: {
-              capabilityId: string;
-              title: string;
-              description: string;
-              requestContentTypes: string[];
-              responseContentTypes: string[];
-              channels: string[];
-              paymentPolicy: string;
-              inputSchema?: {
-                [k: string]: unknown;
-              };
-              outputSchema?: {
-                [k: string]: unknown;
-              };
-              [k: string]: unknown;
-            }[];
-            contentTypes: {
-              authorityId: string;
-              typeId: string;
-              versionMajor: number;
-              versionMinor?: number;
-              purpose: string;
-              channel?: string;
-            }[];
-            channels: {
-              channelId: string;
-              kind: string;
-              description: string;
-              inboxId?: string;
-              conversationId?: string;
-              contentTypes?: string[];
-            }[];
-            paymentPolicies: {
-              policyId: string;
-              capabilityIds: string[];
-              required: boolean;
-              terms: {
-                [k: string]: unknown;
-              };
-            }[];
-            [k: string]: unknown;
-          };
-          skills: {
-            skillId: string;
-            name: string;
-            version: string;
-            kind: string;
-            imports: {
-              skillId: string;
-              version: string;
-              required?: boolean;
-            }[];
-            skill: {
-              capabilities: {
-                capabilityId: string;
-                title: string;
-                description: string;
-                requestContentTypes: string[];
-                responseContentTypes: string[];
-                channels: string[];
-                paymentPolicy: string;
-                inputSchema?: {
-                  [k: string]: unknown;
-                };
-                outputSchema?: {
-                  [k: string]: unknown;
-                };
-                [k: string]: unknown;
-              }[];
-              contentTypes: {
-                authorityId: string;
-                typeId: string;
-                versionMajor: number;
-                versionMinor?: number;
-                purpose: string;
-                channel?: string;
-              }[];
-              channels: {
-                channelId: string;
-                kind: string;
-                description: string;
-                inboxId?: string;
-                conversationId?: string;
-                contentTypes?: string[];
-              }[];
-              paymentPolicies: {
-                policyId: string;
-                capabilityIds: string[];
-                required: boolean;
-                terms: {
-                  [k: string]: unknown;
-                };
-              }[];
-              [k: string]: unknown;
-            };
-            content: string;
-            mediaType: string;
-          }[];
-          resolution: {
-            mode: "resolved" | "skills" | "all";
-            requestedSkillIds?: string[];
-            includedSkillIds: string[];
-            dependencyOrder: string[];
-          };
-          content: string;
-          mediaType: string;
-        };
-      };
+      profile: NetworkSkillPacketProfileSchema;
       extensions?: {
         [k: string]: unknown;
       };
     };
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "registrationResultPayloadSchema".
+ */
 export type RegistrationResultPayloadSchema =
   | {
       requestId: string;
@@ -943,388 +118,26 @@ export type RegistrationResultPayloadSchema =
   | {
       requestId: string;
       status: "rejected";
-      error: {
-        code: "sender-mismatch" | "malformed" | "unsupported" | "policy" | "internal";
-        message: string;
-      };
+      error: NetworkRegistrationErrorSchema;
     };
-
-export interface RegistrationRemovePayloadSchema {
-  requestId: string;
-  agentId?: string;
-  syncInboxId?: string;
-}
-
-export interface AgentQueryPayloadSchema {
-  requestId: string;
-  query?: string;
-  skillIds?: string[];
-  capabilityIds?: string[];
-  limit?: number;
-  cursor?: string;
-}
-
-export interface AgentQueryResponsePayloadSchema {
-  requestId: string;
-  results: {
-    registrationId: string;
-    agent: {
-      agentId: string;
-      syncInboxId: string;
-      displayName: string;
-      protocolVersion: string;
-    };
-    walletAddress: string;
-    visibility: "private" | "public";
-    listingTier: "standard" | "premium";
-    description: string;
-    skillDisclosure: "summary-only" | "include-skill-packet";
-    claimTypes: string[];
-    connectionCount: number;
-    skillPacket?: {
-      agent: {
-        agentId: string;
-        kind: string;
-        syncInboxId: string;
-        displayName: string;
-        protocolVersion: string;
-      };
-      skill: {
-        capabilities: {
-          capabilityId: string;
-          title: string;
-          description: string;
-          requestContentTypes: string[];
-          responseContentTypes: string[];
-          channels: string[];
-          paymentPolicy: string;
-          inputSchema?: {
-            [k: string]: unknown;
-          };
-          outputSchema?: {
-            [k: string]: unknown;
-          };
-          [k: string]: unknown;
-        }[];
-        contentTypes: {
-          authorityId: string;
-          typeId: string;
-          versionMajor: number;
-          versionMinor?: number;
-          purpose: string;
-          channel?: string;
-        }[];
-        channels: {
-          channelId: string;
-          kind: string;
-          description: string;
-          inboxId?: string;
-          conversationId?: string;
-          contentTypes?: string[];
-        }[];
-        paymentPolicies: {
-          policyId: string;
-          capabilityIds: string[];
-          required: boolean;
-          terms: {
-            [k: string]: unknown;
-          };
-        }[];
-        [k: string]: unknown;
-      };
-      skills: {
-        skillId: string;
-        name: string;
-        version: string;
-        kind: string;
-        imports: {
-          skillId: string;
-          version: string;
-          required?: boolean;
-        }[];
-        skill: {
-          capabilities: {
-            capabilityId: string;
-            title: string;
-            description: string;
-            requestContentTypes: string[];
-            responseContentTypes: string[];
-            channels: string[];
-            paymentPolicy: string;
-            inputSchema?: {
-              [k: string]: unknown;
-            };
-            outputSchema?: {
-              [k: string]: unknown;
-            };
-            [k: string]: unknown;
-          }[];
-          contentTypes: {
-            authorityId: string;
-            typeId: string;
-            versionMajor: number;
-            versionMinor?: number;
-            purpose: string;
-            channel?: string;
-          }[];
-          channels: {
-            channelId: string;
-            kind: string;
-            description: string;
-            inboxId?: string;
-            conversationId?: string;
-            contentTypes?: string[];
-          }[];
-          paymentPolicies: {
-            policyId: string;
-            capabilityIds: string[];
-            required: boolean;
-            terms: {
-              [k: string]: unknown;
-            };
-          }[];
-          [k: string]: unknown;
-        };
-        content: string;
-        mediaType: string;
-      }[];
-      resolution: {
-        mode: "resolved" | "skills" | "all";
-        requestedSkillIds?: string[];
-        includedSkillIds: string[];
-        dependencyOrder: string[];
-      };
-      content: string;
-      mediaType: string;
-    };
-    updatedAt: string;
-    expiresAt?: string;
-    premiumExpiresAt?: string;
-  }[];
-  nextCursor?: string;
-}
-
-export interface AgentGetPayloadSchema {
-  requestId: string;
-  agentId?: string;
-  syncInboxId?: string;
-}
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "agentGetResponsePayloadSchema".
+ */
 export type AgentGetResponsePayloadSchema =
   | {
       requestId: string;
       status: "found";
-      result: {
-        registrationId: string;
-        agent: {
-          agentId: string;
-          syncInboxId: string;
-          displayName: string;
-          protocolVersion: string;
-        };
-        walletAddress: string;
-        visibility: "private" | "public";
-        listingTier: "standard" | "premium";
-        description: string;
-        skillDisclosure: "summary-only" | "include-skill-packet";
-        claimTypes: string[];
-        connectionCount: number;
-        skillPacket?: {
-          agent: {
-            agentId: string;
-            kind: string;
-            syncInboxId: string;
-            displayName: string;
-            protocolVersion: string;
-          };
-          skill: {
-            capabilities: {
-              capabilityId: string;
-              title: string;
-              description: string;
-              requestContentTypes: string[];
-              responseContentTypes: string[];
-              channels: string[];
-              paymentPolicy: string;
-              inputSchema?: {
-                [k: string]: unknown;
-              };
-              outputSchema?: {
-                [k: string]: unknown;
-              };
-              [k: string]: unknown;
-            }[];
-            contentTypes: {
-              authorityId: string;
-              typeId: string;
-              versionMajor: number;
-              versionMinor?: number;
-              purpose: string;
-              channel?: string;
-            }[];
-            channels: {
-              channelId: string;
-              kind: string;
-              description: string;
-              inboxId?: string;
-              conversationId?: string;
-              contentTypes?: string[];
-            }[];
-            paymentPolicies: {
-              policyId: string;
-              capabilityIds: string[];
-              required: boolean;
-              terms: {
-                [k: string]: unknown;
-              };
-            }[];
-            [k: string]: unknown;
-          };
-          skills: {
-            skillId: string;
-            name: string;
-            version: string;
-            kind: string;
-            imports: {
-              skillId: string;
-              version: string;
-              required?: boolean;
-            }[];
-            skill: {
-              capabilities: {
-                capabilityId: string;
-                title: string;
-                description: string;
-                requestContentTypes: string[];
-                responseContentTypes: string[];
-                channels: string[];
-                paymentPolicy: string;
-                inputSchema?: {
-                  [k: string]: unknown;
-                };
-                outputSchema?: {
-                  [k: string]: unknown;
-                };
-                [k: string]: unknown;
-              }[];
-              contentTypes: {
-                authorityId: string;
-                typeId: string;
-                versionMajor: number;
-                versionMinor?: number;
-                purpose: string;
-                channel?: string;
-              }[];
-              channels: {
-                channelId: string;
-                kind: string;
-                description: string;
-                inboxId?: string;
-                conversationId?: string;
-                contentTypes?: string[];
-              }[];
-              paymentPolicies: {
-                policyId: string;
-                capabilityIds: string[];
-                required: boolean;
-                terms: {
-                  [k: string]: unknown;
-                };
-              }[];
-              [k: string]: unknown;
-            };
-            content: string;
-            mediaType: string;
-          }[];
-          resolution: {
-            mode: "resolved" | "skills" | "all";
-            requestedSkillIds?: string[];
-            includedSkillIds: string[];
-            dependencyOrder: string[];
-          };
-          content: string;
-          mediaType: string;
-        };
-        updatedAt: string;
-        expiresAt?: string;
-        premiumExpiresAt?: string;
-      };
+      result: NetworkNetworkAgentRecordSchema;
     }
   | {
       requestId: string;
       status: "not-found";
     };
-
-export interface PaymentRequiredPayloadSchema {
-  requestId: string;
-  x402Version: number;
-  resource: {
-    url: string;
-    description?: string;
-    mimeType?: string;
-  };
-  /**
-   * @minItems 1
-   */
-  accepts: [
-    {
-      scheme: string;
-      network: string;
-      asset: string;
-      amount: string;
-      payTo: string;
-      maxTimeoutSeconds: number;
-      extra: {
-        [k: string]: unknown;
-      };
-    },
-    ...{
-      scheme: string;
-      network: string;
-      asset: string;
-      amount: string;
-      payTo: string;
-      maxTimeoutSeconds: number;
-      extra: {
-        [k: string]: unknown;
-      };
-    }[]
-  ];
-  extensions?: {
-    [k: string]: unknown;
-  };
-  reason?: string;
-}
-
-export interface PaymentSubmitPayloadSchema {
-  requestId: string;
-  payment: {
-    x402Version: number;
-    resource?: {
-      url: string;
-      description?: string;
-      mimeType?: string;
-    };
-    accepted: {
-      scheme: string;
-      network: string;
-      asset: string;
-      amount: string;
-      payTo: string;
-      maxTimeoutSeconds: number;
-      extra: {
-        [k: string]: unknown;
-      };
-    };
-    payload: {
-      [k: string]: unknown;
-    };
-    extensions?: {
-      [k: string]: unknown;
-    };
-  };
-}
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "paymentResultPayloadSchema".
+ */
 export type PaymentResultPayloadSchema =
   | {
       status: "verified" | "settled";
@@ -1344,70 +157,46 @@ export type PaymentResultPayloadSchema =
         message: string;
       };
     };
-
-export interface ConfigurationRequestPayloadSchema {
-  requestId: string;
-  names?: string[];
-  includeValues?: "public" | "none";
-}
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "configurationResponsePayloadSchema".
+ */
 export type ConfigurationResponsePayloadSchema =
   | {
       requestId: string;
       status: "ok";
-      variables: (
-        | {
-            name: string;
-            visibility: "public";
-            description?: string;
-            valueType?: string;
-            required?: boolean;
-            source?: string;
-            value?:
-              | null
-              | boolean
-              | number
-              | string
-              | {
-                  [k: string]: unknown;
-                }[]
-              | {
-                  /**
-                   * Circular reference to sayso://sayso.configure/common#/$defs/configurationValue.
-                   */
-                  [k: string]: {
-                    [k: string]: unknown;
-                  };
-                };
-          }
-        | {
-            name: string;
-            visibility: "private";
-            description?: string;
-            valueType?: string;
-            required?: boolean;
-            source?: string;
-          }
-      )[];
+      variables: ConfigureConfigurationVariableSchema[];
       generatedAt?: string;
     }
   | {
       requestId: string;
       status: "error";
-      error: {
-        code: "malformed" | "not-found" | "policy" | "internal";
-        message: string;
-      };
+      error: ConfigureConfigurationErrorSchema;
     };
-
-export interface SourceManifestRequestPayloadSchema {
-  requestId: string;
-  format?: "files" | "tar.gz" | "zip";
-  include?: string[];
-  exclude?: string[];
-  maxChunkSizeBytes?: number;
-}
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "configureConfigurationVariableSchema".
+ */
+export type ConfigureConfigurationVariableSchema =
+  | ConfigurePublicConfigurationVariableSchema
+  | ConfigurePrivateConfigurationVariableSchema;
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "configureConfigurationValueSchema".
+ */
+export type ConfigureConfigurationValueSchema =
+  | null
+  | boolean
+  | number
+  | string
+  | ConfigureConfigurationValueSchema[]
+  | {
+      [k: string]: ConfigureConfigurationValueSchema;
+    };
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "sourceManifestResponsePayloadSchema".
+ */
 export type SourceManifestResponsePayloadSchema =
   | {
       requestId: string;
@@ -1416,198 +205,105 @@ export type SourceManifestResponsePayloadSchema =
       createdAt: string;
       expiresAt?: string;
       chunkSizeBytes: number;
-      files: {
-        path: string;
-        kind: "file";
-        sizeBytes: number;
-        sha256: string;
-        chunks: number;
-        mediaType?: string;
-        executable?: boolean;
-      }[];
-      archives?: {
-        format: "tar.gz" | "zip";
-        sizeBytes: number;
-        sha256: string;
-        chunks: number;
-        mediaType: string;
-      }[];
+      files: SourceSourceFileEntrySchema[];
+      archives?: SourceSourceArchiveEntrySchema[];
     }
   | {
       requestId: string;
       status: "error";
-      error: {
-        code: "malformed" | "not-found" | "policy" | "snapshot-expired" | "internal";
-        message: string;
-      };
+      error: SourceSourceErrorSchema;
     };
-
-export interface SourceChunkRequestPayloadSchema {
-  requestId: string;
-  snapshotId: string;
-  target:
-    | {
-        kind: "file";
-        path: string;
-      }
-    | {
-        kind: "archive";
-        format: "tar.gz" | "zip";
-      };
-  chunkIndex: number;
-}
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "sourceRelativePathSchema".
+ */
+export type SourceRelativePathSchema = string;
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "sourceSha256Schema".
+ */
+export type SourceSha256Schema = string;
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "sourceSourceChunkTargetSchema".
+ */
+export type SourceSourceChunkTargetSchema =
+  | {
+      kind: "file";
+      path: SourceRelativePathSchema;
+    }
+  | {
+      kind: "archive";
+      format: "tar.gz" | "zip";
+    };
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "sourceChunkResponsePayloadSchema".
+ */
 export type SourceChunkResponsePayloadSchema =
   | {
       requestId: string;
       status: "ok";
       snapshotId: string;
-      target:
-        | {
-            kind: "file";
-            path: string;
-          }
-        | {
-            kind: "archive";
-            format: "tar.gz" | "zip";
-          };
+      target: SourceSourceChunkTargetSchema;
       chunkIndex: number;
       chunkCount: number;
-      sha256: string;
+      sha256: SourceSha256Schema;
       bytesBase64: string;
     }
   | {
       requestId: string;
       status: "error";
-      error: {
-        code: "malformed" | "not-found" | "policy" | "snapshot-expired" | "internal";
-        message: string;
-      };
+      error: SourceSourceErrorSchema;
     };
-
-export interface ForkOffersRequestPayloadSchema {
-  requestId: string;
-  requestedDurationSeconds?: number;
-  includePaymentRequirements?: boolean;
-}
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkOffersResponsePayloadSchema".
+ */
 export type ForkOffersResponsePayloadSchema =
   | {
       requestId: string;
       status: "ok";
-      offers: {
-        offerId: string;
-        title?: string;
-        description?: string;
-        durationSeconds: number;
-        expiresAt?: string;
-        provider: {
-          providerId: string;
-          name?: string;
-          kind?: string;
-          region?: string;
-          termsUri?: string;
-        };
-        requiredConfiguration: string[];
-        payment?:
-          | {
-              required: false;
-            }
-          | {
-              required: true;
-              x402Version: number;
-              /**
-               * @minItems 1
-               */
-              accepts: [
-                {
-                  scheme: string;
-                  network: string;
-                  asset: string;
-                  amount: string;
-                  payTo: string;
-                  maxTimeoutSeconds: number;
-                  extra: {
-                    [k: string]: unknown;
-                  };
-                },
-                ...{
-                  scheme: string;
-                  network: string;
-                  asset: string;
-                  amount: string;
-                  payTo: string;
-                  maxTimeoutSeconds: number;
-                  extra: {
-                    [k: string]: unknown;
-                  };
-                }[]
-              ];
-            };
-      }[];
+      offers: ForkForkOfferSchema[];
       generatedAt?: string;
     }
   | {
       requestId: string;
       status: "error";
-      error: {
-        code: "malformed" | "policy" | "internal";
-        message: string;
-      };
+      error: ForkForkOffersErrorSchema;
     };
-
-export interface ForkRequestPayloadSchema {
-  requestId: string;
-  offerId: string;
-  configuration?: {
-    name: string;
-    value:
-      | null
-      | boolean
-      | number
-      | string
-      | {
-          [k: string]: unknown;
-        }[]
-      | {
-          /**
-           * Circular reference to sayso://sayso.fork/common#/$defs/forkConfigurationValue.
-           */
-          [k: string]: {
-            [k: string]: unknown;
-          };
-        };
-  }[];
-  requester?: {
-    [k: string]: unknown;
-  };
-  extensions?: {
-    [k: string]: unknown;
-  };
-}
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkForkOfferPaymentSchema".
+ */
+export type ForkForkOfferPaymentSchema = ForkFreeForkOfferPaymentSchema | ForkPaidForkOfferPaymentSchema;
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkForkConfigurationValueSchema".
+ */
+export type ForkForkConfigurationValueSchema =
+  | null
+  | boolean
+  | number
+  | string
+  | ForkForkConfigurationValueSchema[]
+  | {
+      [k: string]: ForkForkConfigurationValueSchema;
+    };
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkResultPayloadSchema".
+ */
 export type ForkResultPayloadSchema =
   | {
       requestId: string;
       status: "accepted";
       forkId: string;
       offerId: string;
-      provider: {
-        providerId: string;
-        name?: string;
-        kind?: string;
-        region?: string;
-        termsUri?: string;
-      };
+      provider: ForkForkProviderSchema;
       validFrom: string;
       expiresAt: string;
-      agent?: {
-        agentId?: string;
-        syncInboxId?: string;
-        displayName?: string;
-        protocolVersion?: string;
-        endpointUri?: string;
-      };
+      agent?: ForkForkedAgentEndpointSchema;
       extensions?: {
         [k: string]: unknown;
       };
@@ -1615,12 +311,12 @@ export type ForkResultPayloadSchema =
   | {
       requestId: string;
       status: "rejected";
-      error: {
-        code: "malformed" | "unknown-offer" | "payment-required" | "payment-invalid" | "policy" | "internal";
-        message: string;
-      };
+      error: ForkForkResultErrorSchema;
     };
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "upgradeProposalPayloadSchema".
+ */
 export type UpgradeProposalPayloadSchema =
   | {
       proposalId: string;
@@ -1630,145 +326,12 @@ export type UpgradeProposalPayloadSchema =
       /**
        * @minItems 1
        */
-      skillChanges: [
-        {
-          skillId: string;
-          operation: "keep" | "replace" | "add" | "remove";
-          fromVersion?: string;
-          toVersion?: string;
-          reason?: string;
-        },
-        ...{
-          skillId: string;
-          operation: "keep" | "replace" | "add" | "remove";
-          fromVersion?: string;
-          toVersion?: string;
-          reason?: string;
-        }[]
-      ];
+      skillChanges: [UpgradeSkillChangeSchema, ...UpgradeSkillChangeSchema[]];
       /**
        * @minItems 1
        */
-      targetSkills: [
-        {
-          skillId: string;
-          name: string;
-          version: string;
-          kind: string;
-          imports: {
-            skillId: string;
-            version: string;
-            required?: boolean;
-          }[];
-          skill: {
-            capabilities: {
-              capabilityId: string;
-              title: string;
-              description: string;
-              requestContentTypes: string[];
-              responseContentTypes: string[];
-              channels: string[];
-              paymentPolicy: string;
-              inputSchema?: {
-                [k: string]: unknown;
-              };
-              outputSchema?: {
-                [k: string]: unknown;
-              };
-              [k: string]: unknown;
-            }[];
-            contentTypes: {
-              authorityId: string;
-              typeId: string;
-              versionMajor: number;
-              versionMinor?: number;
-              purpose: string;
-              channel?: string;
-            }[];
-            channels: {
-              channelId: string;
-              kind: string;
-              description: string;
-              inboxId?: string;
-              conversationId?: string;
-              contentTypes?: string[];
-            }[];
-            paymentPolicies: {
-              policyId: string;
-              capabilityIds: string[];
-              required: boolean;
-              terms: {
-                [k: string]: unknown;
-              };
-            }[];
-            [k: string]: unknown;
-          };
-          content: string;
-          mediaType: string;
-        },
-        ...{
-          skillId: string;
-          name: string;
-          version: string;
-          kind: string;
-          imports: {
-            skillId: string;
-            version: string;
-            required?: boolean;
-          }[];
-          skill: {
-            capabilities: {
-              capabilityId: string;
-              title: string;
-              description: string;
-              requestContentTypes: string[];
-              responseContentTypes: string[];
-              channels: string[];
-              paymentPolicy: string;
-              inputSchema?: {
-                [k: string]: unknown;
-              };
-              outputSchema?: {
-                [k: string]: unknown;
-              };
-              [k: string]: unknown;
-            }[];
-            contentTypes: {
-              authorityId: string;
-              typeId: string;
-              versionMajor: number;
-              versionMinor?: number;
-              purpose: string;
-              channel?: string;
-            }[];
-            channels: {
-              channelId: string;
-              kind: string;
-              description: string;
-              inboxId?: string;
-              conversationId?: string;
-              contentTypes?: string[];
-            }[];
-            paymentPolicies: {
-              policyId: string;
-              capabilityIds: string[];
-              required: boolean;
-              terms: {
-                [k: string]: unknown;
-              };
-            }[];
-            [k: string]: unknown;
-          };
-          content: string;
-          mediaType: string;
-        }[]
-      ];
-      targetResolution?: {
-        mode: "resolved" | "skills" | "all";
-        requestedSkillIds?: string[];
-        includedSkillIds: string[];
-        dependencyOrder: string[];
-      };
+      targetSkills: [ProtocolSaysoSkillDocumentSchema, ...ProtocolSaysoSkillDocumentSchema[]];
+      targetResolution?: ProtocolSkillResolutionSchema;
       summary?: string;
       expiresAt?: string;
     }
@@ -1780,48 +343,713 @@ export type UpgradeProposalPayloadSchema =
       /**
        * @minItems 1
        */
-      skillChanges: [
-        {
-          skillId: string;
-          operation: "keep" | "replace" | "add" | "remove";
-          fromVersion?: string;
-          toVersion?: string;
-          reason?: string;
-        },
-        ...{
-          skillId: string;
-          operation: "keep" | "replace" | "add" | "remove";
-          fromVersion?: string;
-          toVersion?: string;
-          reason?: string;
-        }[]
-      ];
+      skillChanges: [UpgradeSkillChangeSchema, ...UpgradeSkillChangeSchema[]];
       /**
        * @maxItems 0
        */
       targetSkills?: [];
-      handoffProtocol: {
-        protocolId: string;
-        version: string;
-        transport: string;
-        /**
-         * @minItems 1
-         */
-        entryContentTypes: [string, ...string[]];
-        description?: string;
-        specificationUri?: string;
-      };
+      handoffProtocol: UpgradeHandoffProtocolSchema;
       summary?: string;
       expiresAt?: string;
     };
 
+export interface SaySoGeneratedPayloadSchemas {
+  agentInfoPayloadSchema?: AgentInfoPayloadSchema;
+  connectionRequestPayloadSchema?: ConnectionRequestPayloadSchema;
+  connectionResponsePayloadSchema?: ConnectionResponsePayloadSchema;
+  skillRequestPayloadSchema?: SkillRequestPayloadSchema;
+  skillResponsePayloadSchema?: SkillResponsePayloadSchema;
+  disconnectPayloadSchema?: DisconnectPayloadSchema;
+  forgetMePayloadSchema?: ForgetMePayloadSchema;
+  disconnectAckPayloadSchema?: DisconnectAckPayloadSchema;
+  errorPayloadSchema?: ErrorPayloadSchema;
+  registrationSubmitPayloadSchema?: RegistrationSubmitPayloadSchema;
+  premiumRegistrationSubmitPayloadSchema?: PremiumRegistrationSubmitPayloadSchema;
+  registrationResultPayloadSchema?: RegistrationResultPayloadSchema;
+  registrationRemovePayloadSchema?: RegistrationRemovePayloadSchema;
+  agentQueryPayloadSchema?: AgentQueryPayloadSchema;
+  agentQueryResponsePayloadSchema?: AgentQueryResponsePayloadSchema;
+  agentGetPayloadSchema?: AgentGetPayloadSchema;
+  agentGetResponsePayloadSchema?: AgentGetResponsePayloadSchema;
+  paymentRequiredPayloadSchema?: PaymentRequiredPayloadSchema;
+  paymentSubmitPayloadSchema?: PaymentSubmitPayloadSchema;
+  paymentResultPayloadSchema?: PaymentResultPayloadSchema;
+  configurationRequestPayloadSchema?: ConfigurationRequestPayloadSchema;
+  configurationResponsePayloadSchema?: ConfigurationResponsePayloadSchema;
+  sourceManifestRequestPayloadSchema?: SourceManifestRequestPayloadSchema;
+  sourceManifestResponsePayloadSchema?: SourceManifestResponsePayloadSchema;
+  sourceChunkRequestPayloadSchema?: SourceChunkRequestPayloadSchema;
+  sourceChunkResponsePayloadSchema?: SourceChunkResponsePayloadSchema;
+  forkOffersRequestPayloadSchema?: ForkOffersRequestPayloadSchema;
+  forkOffersResponsePayloadSchema?: ForkOffersResponsePayloadSchema;
+  forkRequestPayloadSchema?: ForkRequestPayloadSchema;
+  forkResultPayloadSchema?: ForkResultPayloadSchema;
+  upgradeProposalPayloadSchema?: UpgradeProposalPayloadSchema;
+  upgradeAcceptPayloadSchema?: UpgradeAcceptPayloadSchema;
+  upgradeRejectPayloadSchema?: UpgradeRejectPayloadSchema;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "agentInfoPayloadSchema".
+ */
+export interface AgentInfoPayloadSchema {
+  protocolVersion: string;
+  supportedProtocolVersions: string[];
+  agent: ProtocolAgentInfoSchema;
+  fallbackText: string;
+  skillPacket: ProtocolSkillPacketSchema;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolAgentInfoSchema".
+ */
+export interface ProtocolAgentInfoSchema {
+  agentId: string;
+  syncInboxId: string;
+  displayName: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolSkillPacketSchema".
+ */
+export interface ProtocolSkillPacketSchema {
+  agent: ProtocolSkillPacketAgentSchema;
+  skill: ProtocolAgentSkillContractSchema;
+  skills: ProtocolSaysoSkillDocumentSchema[];
+  resolution: ProtocolSkillResolutionSchema;
+  content: string;
+  mediaType: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolSkillPacketAgentSchema".
+ */
+export interface ProtocolSkillPacketAgentSchema {
+  agentId: string;
+  kind: string;
+  syncInboxId: string;
+  displayName: string;
+  protocolVersion: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolAgentSkillContractSchema".
+ */
+export interface ProtocolAgentSkillContractSchema {
+  capabilities: ProtocolAgentCapabilitySchema[];
+  contentTypes: ProtocolAgentContentTypeSchema[];
+  channels: ProtocolAgentChannelSchema[];
+  paymentPolicies: ProtocolAgentPaymentPolicySchema[];
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolAgentCapabilitySchema".
+ */
+export interface ProtocolAgentCapabilitySchema {
+  capabilityId: string;
+  description: string;
+  requestContentTypes: string[];
+  responseContentTypes: string[];
+  channels: string[];
+  paymentPolicy: string;
+  inputSchema?: {
+    [k: string]: unknown;
+  };
+  outputSchema?: {
+    [k: string]: unknown;
+  };
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolAgentContentTypeSchema".
+ */
+export interface ProtocolAgentContentTypeSchema {
+  authorityId: string;
+  typeId: string;
+  versionMajor: number;
+  versionMinor?: number;
+  purpose: string;
+  channel?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolAgentChannelSchema".
+ */
+export interface ProtocolAgentChannelSchema {
+  channelId: string;
+  kind: string;
+  description: string;
+  inboxId?: string;
+  conversationId?: string;
+  contentTypes?: string[];
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolAgentPaymentPolicySchema".
+ */
+export interface ProtocolAgentPaymentPolicySchema {
+  policyId: string;
+  capabilityIds: string[];
+  required: boolean;
+  terms: {
+    [k: string]: unknown;
+  };
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolSaysoSkillDocumentSchema".
+ */
+export interface ProtocolSaysoSkillDocumentSchema {
+  skillId: string;
+  name: string;
+  version: string;
+  kind: string;
+  imports: ProtocolSkillImportSchema[];
+  skill: ProtocolAgentSkillContractSchema;
+  content: string;
+  mediaType: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolSkillImportSchema".
+ */
+export interface ProtocolSkillImportSchema {
+  skillId: string;
+  version: string;
+  required?: boolean;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolSkillResolutionSchema".
+ */
+export interface ProtocolSkillResolutionSchema {
+  mode: "resolved" | "skills" | "all";
+  requestedSkillIds?: string[];
+  includedSkillIds: string[];
+  dependencyOrder: string[];
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "connectionRequestPayloadSchema".
+ */
+export interface ConnectionRequestPayloadSchema {
+  presentations?: ProtocolClaimPresentationSchema[];
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolClaimPresentationSchema".
+ */
+export interface ProtocolClaimPresentationSchema {
+  type: string;
+  payload: {
+    [k: string]: unknown;
+  };
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolVerifiedClaimSchema".
+ */
+export interface ProtocolVerifiedClaimSchema {
+  type: string;
+  subject?: {
+    [k: string]: unknown;
+  };
+  status: "verified";
+  verifiedAt: string;
+  expiresAt?: string;
+  issuer?: string;
+  payload?: {
+    [k: string]: unknown;
+  };
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolProtocolErrorSchema".
+ */
+export interface ProtocolProtocolErrorSchema {
+  code:
+    | "unknown-type"
+    | "malformed"
+    | "request-expired"
+    | "not-supported"
+    | "not-connected"
+    | "presentation-unsupported"
+    | "presentation-malformed"
+    | "presentation-verification-failed"
+    | "conflict"
+    | "internal";
+  message: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "skillRequestPayloadSchema".
+ */
+export interface SkillRequestPayloadSchema {
+  include?: "resolved" | "skills" | "all";
+  skillIds?: string[];
+  maxDepth?: number;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "disconnectPayloadSchema".
+ */
+export interface DisconnectPayloadSchema {
+  reason?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forgetMePayloadSchema".
+ */
+export interface ForgetMePayloadSchema {
+  reason?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "disconnectAckPayloadSchema".
+ */
+export interface DisconnectAckPayloadSchema {
+  action: "disconnect" | "forget-me";
+  status: "ok" | "partial" | "error";
+  details?: {
+    [k: string]: unknown;
+  };
+  error?: ProtocolProtocolErrorSchema;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "errorPayloadSchema".
+ */
+export interface ErrorPayloadSchema {
+  code:
+    | "unknown-type"
+    | "malformed"
+    | "request-expired"
+    | "not-supported"
+    | "not-connected"
+    | "presentation-unsupported"
+    | "presentation-malformed"
+    | "presentation-verification-failed"
+    | "conflict"
+    | "internal";
+  message: string;
+  requestId?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "networkNetworkAgentSchema".
+ */
+export interface NetworkNetworkAgentSchema {
+  agentId: string;
+  syncInboxId: string;
+  displayName: string;
+  protocolVersion: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "networkSummaryOnlyProfileSchema".
+ */
+export interface NetworkSummaryOnlyProfileSchema {
+  description: string;
+  skillDisclosure: "summary-only";
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "networkSkillPacketProfileSchema".
+ */
+export interface NetworkSkillPacketProfileSchema {
+  description: string;
+  skillDisclosure: "include-skill-packet";
+  skillPacket: ProtocolSkillPacketSchema;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "networkPremiumNetworkAgentSchema".
+ */
+export interface NetworkPremiumNetworkAgentSchema {
+  agentId: string;
+  syncInboxId: string;
+  displayName: string;
+  protocolVersion: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "networkRegistrationErrorSchema".
+ */
+export interface NetworkRegistrationErrorSchema {
+  code: "sender-mismatch" | "malformed" | "unsupported" | "policy" | "internal";
+  message: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "registrationRemovePayloadSchema".
+ */
+export interface RegistrationRemovePayloadSchema {
+  requestId: string;
+  agentId?: string;
+  syncInboxId?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "agentQueryPayloadSchema".
+ */
+export interface AgentQueryPayloadSchema {
+  requestId: string;
+  query?: string;
+  skillIds?: string[];
+  capabilityIds?: string[];
+  limit?: number;
+  cursor?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "agentQueryResponsePayloadSchema".
+ */
+export interface AgentQueryResponsePayloadSchema {
+  requestId: string;
+  results: NetworkNetworkAgentRecordSchema[];
+  nextCursor?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "networkNetworkAgentRecordSchema".
+ */
+export interface NetworkNetworkAgentRecordSchema {
+  registrationId: string;
+  agent: NetworkNetworkAgentSchema;
+  walletAddress: string;
+  visibility: "private" | "public";
+  listingTier: "standard" | "premium";
+  description: string;
+  skillDisclosure: "summary-only" | "include-skill-packet";
+  claimTypes: string[];
+  connectionCount: number;
+  skillPacket?: ProtocolSkillPacketSchema;
+  updatedAt: string;
+  expiresAt?: string;
+  premiumExpiresAt?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "agentGetPayloadSchema".
+ */
+export interface AgentGetPayloadSchema {
+  requestId: string;
+  agentId?: string;
+  syncInboxId?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "paymentRequiredPayloadSchema".
+ */
+export interface PaymentRequiredPayloadSchema {
+  requestId: string;
+  x402Version: number;
+  resource: PaymentX402ResourceInfoSchema;
+  /**
+   * @minItems 1
+   */
+  accepts: [PaymentX402PaymentRequirementsSchema, ...PaymentX402PaymentRequirementsSchema[]];
+  extensions?: {
+    [k: string]: unknown;
+  };
+  reason?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "paymentX402ResourceInfoSchema".
+ */
+export interface PaymentX402ResourceInfoSchema {
+  url: string;
+  description?: string;
+  mimeType?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "paymentX402PaymentRequirementsSchema".
+ */
+export interface PaymentX402PaymentRequirementsSchema {
+  scheme: string;
+  network: string;
+  asset: string;
+  amount: string;
+  payTo: string;
+  maxTimeoutSeconds: number;
+  extra: {
+    [k: string]: unknown;
+  };
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "paymentSubmitPayloadSchema".
+ */
+export interface PaymentSubmitPayloadSchema {
+  requestId: string;
+  payment: {
+    x402Version: number;
+    resource?: PaymentX402ResourceInfoSchema;
+    accepted: PaymentX402PaymentRequirementsSchema;
+    payload: {
+      [k: string]: unknown;
+    };
+    extensions?: {
+      [k: string]: unknown;
+    };
+  };
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "configurationRequestPayloadSchema".
+ */
+export interface ConfigurationRequestPayloadSchema {
+  requestId: string;
+  names?: string[];
+  includeValues?: "public" | "none";
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "configurePublicConfigurationVariableSchema".
+ */
+export interface ConfigurePublicConfigurationVariableSchema {
+  name: string;
+  visibility: "public";
+  description?: string;
+  valueType?: string;
+  required?: boolean;
+  source?: string;
+  value?: ConfigureConfigurationValueSchema;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "configurePrivateConfigurationVariableSchema".
+ */
+export interface ConfigurePrivateConfigurationVariableSchema {
+  name: string;
+  visibility: "private";
+  description?: string;
+  valueType?: string;
+  required?: boolean;
+  source?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "configureConfigurationErrorSchema".
+ */
+export interface ConfigureConfigurationErrorSchema {
+  code: "malformed" | "not-found" | "policy" | "internal";
+  message: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "sourceManifestRequestPayloadSchema".
+ */
+export interface SourceManifestRequestPayloadSchema {
+  requestId: string;
+  format?: "files" | "tar.gz" | "zip";
+  include?: string[];
+  exclude?: string[];
+  maxChunkSizeBytes?: number;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "sourceSourceFileEntrySchema".
+ */
+export interface SourceSourceFileEntrySchema {
+  path: SourceRelativePathSchema;
+  kind: "file";
+  sizeBytes: number;
+  sha256: SourceSha256Schema;
+  chunks: number;
+  mediaType?: string;
+  executable?: boolean;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "sourceSourceArchiveEntrySchema".
+ */
+export interface SourceSourceArchiveEntrySchema {
+  format: "tar.gz" | "zip";
+  sizeBytes: number;
+  sha256: SourceSha256Schema;
+  chunks: number;
+  mediaType: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "sourceSourceErrorSchema".
+ */
+export interface SourceSourceErrorSchema {
+  code: "malformed" | "not-found" | "policy" | "snapshot-expired" | "internal";
+  message: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "sourceChunkRequestPayloadSchema".
+ */
+export interface SourceChunkRequestPayloadSchema {
+  requestId: string;
+  snapshotId: string;
+  target: SourceSourceChunkTargetSchema;
+  chunkIndex: number;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkOffersRequestPayloadSchema".
+ */
+export interface ForkOffersRequestPayloadSchema {
+  requestId: string;
+  requestedDurationSeconds?: number;
+  includePaymentRequirements?: boolean;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkForkOfferSchema".
+ */
+export interface ForkForkOfferSchema {
+  offerId: string;
+  description?: string;
+  durationSeconds: number;
+  expiresAt?: string;
+  provider: ForkForkProviderSchema;
+  requiredConfiguration: string[];
+  payment?: ForkForkOfferPaymentSchema;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkForkProviderSchema".
+ */
+export interface ForkForkProviderSchema {
+  providerId: string;
+  name?: string;
+  kind?: string;
+  region?: string;
+  termsUri?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkFreeForkOfferPaymentSchema".
+ */
+export interface ForkFreeForkOfferPaymentSchema {
+  required: false;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkPaidForkOfferPaymentSchema".
+ */
+export interface ForkPaidForkOfferPaymentSchema {
+  required: true;
+  x402Version: number;
+  /**
+   * @minItems 1
+   */
+  accepts: [PaymentX402PaymentRequirementsSchema, ...PaymentX402PaymentRequirementsSchema[]];
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkForkOffersErrorSchema".
+ */
+export interface ForkForkOffersErrorSchema {
+  code: "malformed" | "policy" | "internal";
+  message: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkRequestPayloadSchema".
+ */
+export interface ForkRequestPayloadSchema {
+  requestId: string;
+  offerId: string;
+  configuration?: ForkForkConfigurationInputSchema[];
+  requester?: {
+    [k: string]: unknown;
+  };
+  extensions?: {
+    [k: string]: unknown;
+  };
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkForkConfigurationInputSchema".
+ */
+export interface ForkForkConfigurationInputSchema {
+  name: string;
+  value: ForkForkConfigurationValueSchema;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkForkedAgentEndpointSchema".
+ */
+export interface ForkForkedAgentEndpointSchema {
+  agentId?: string;
+  syncInboxId?: string;
+  displayName?: string;
+  protocolVersion?: string;
+  endpointUri?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "forkForkResultErrorSchema".
+ */
+export interface ForkForkResultErrorSchema {
+  code: "malformed" | "unknown-offer" | "payment-required" | "payment-invalid" | "policy" | "internal";
+  message: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "upgradeSkillChangeSchema".
+ */
+export interface UpgradeSkillChangeSchema {
+  skillId: string;
+  operation: "keep" | "replace" | "add" | "remove";
+  fromVersion?: string;
+  toVersion?: string;
+  reason?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "upgradeHandoffProtocolSchema".
+ */
+export interface UpgradeHandoffProtocolSchema {
+  protocolId: string;
+  version: string;
+  transport: string;
+  /**
+   * @minItems 1
+   */
+  entryContentTypes: [string, ...string[]];
+  description?: string;
+  specificationUri?: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "upgradeAcceptPayloadSchema".
+ */
 export interface UpgradeAcceptPayloadSchema {
   proposalId: string;
   acceptedAt: string;
 }
-
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "upgradeRejectPayloadSchema".
+ */
 export interface UpgradeRejectPayloadSchema {
   proposalId: string;
   code: "unsupported" | "incompatible" | "expired" | "policy" | "malformed" | "other";
   reason: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "protocolImplementationDescriptorSchema".
+ */
+export interface ProtocolImplementationDescriptorSchema {
+  implementationId: string;
+  implements: string[];
+  language: string;
+  runtime: string;
+  entrypoint: string;
+  source: string;
+  sha256: string;
+  permissions: string[];
+  signature?: string;
 }

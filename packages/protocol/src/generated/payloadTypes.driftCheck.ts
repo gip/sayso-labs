@@ -97,8 +97,7 @@ const _agentQueryFwd: AssertAssignable<AgentQueryPayload, AgentQueryPayloadSchem
 const _agentQueryResponseFwd: AssertAssignable<AgentQueryResponsePayload, AgentQueryResponsePayloadSchema> = true;
 const _agentGetFwd: AssertAssignable<AgentGetPayload, AgentGetPayloadSchema> = true;
 const _agentGetResponseFwd: AssertAssignable<AgentGetResponsePayload, AgentGetResponsePayloadSchema> = true;
-// FIXME(drift): schema requires accepts: [X, ...X[]] (minItems: 1); hand-written allows empty array.
-// const _paymentRequiredFwd: AssertAssignable<PaymentRequiredPayload, PaymentRequiredPayloadSchema> = true;
+const _paymentRequiredFwd: AssertAssignable<PaymentRequiredPayload, PaymentRequiredPayloadSchema> = true;
 const _paymentSubmitFwd: AssertAssignable<PaymentSubmitPayload, PaymentSubmitPayloadSchema> = true;
 const _paymentResultFwd: AssertAssignable<PaymentResultPayload, PaymentResultPayloadSchema> = true;
 const _configRequestFwd: AssertAssignable<ConfigurationRequestPayload, ConfigurationRequestPayloadSchema> = true;
@@ -109,8 +108,7 @@ const _sourceChunkRequestFwd: AssertAssignable<SourceChunkRequestPayload, Source
 const _sourceChunkResponseFwd: AssertAssignable<SourceChunkResponsePayload, SourceChunkResponsePayloadSchema> = true;
 const _forkOffersRequestFwd: AssertAssignable<ForkOffersRequestPayload, ForkOffersRequestPayloadSchema> = true;
 const _forkOffersResponseFwd: AssertAssignable<ForkOffersResponsePayload, ForkOffersResponsePayloadSchema> = true;
-// FIXME(drift): fork-request configuration field discriminator. See skills/sayso-fork/SKILL.md.
-// const _forkRequestFwd: AssertAssignable<ForkRequestPayload, ForkRequestPayloadSchema> = true;
+const _forkRequestFwd: AssertAssignable<ForkRequestPayload, ForkRequestPayloadSchema> = true;
 const _forkResultFwd: AssertAssignable<ForkResultPayload, ForkResultPayloadSchema> = true;
 
 // Silence "declared but never read"
@@ -130,6 +128,7 @@ export {
   _agentQueryResponseFwd,
   _agentGetFwd,
   _agentGetResponseFwd,
+  _paymentRequiredFwd,
   _paymentSubmitFwd,
   _paymentResultFwd,
   _configRequestFwd,
@@ -140,5 +139,6 @@ export {
   _sourceChunkResponseFwd,
   _forkOffersRequestFwd,
   _forkOffersResponseFwd,
+  _forkRequestFwd,
   _forkResultFwd,
 };
