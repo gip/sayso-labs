@@ -9,7 +9,8 @@ type SchemaNode = Record<string, unknown> | unknown[] | string | number | boolea
 type SchemaObject = Record<string, unknown>;
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const OUTPUT_PATH = path.resolve(HERE, "../src/generated/payloadTypes.ts");
+const PAYLOAD_TYPES_PATH = path.resolve(HERE, "../src/generated/payloadTypes.ts");
+const SCHEMA_CATALOG_PATH = path.resolve(HERE, "../src/generated/schemaCatalog.ts");
 
 // Payloads to emit. The defs key is what jstt will turn into a TS interface name.
 const PAYLOAD_SPECS: Array<{ id: string; defKey: string }> = [
@@ -149,12 +150,49 @@ const main = async () => {
     "// Do not edit by hand. Run `pnpm --filter @sayso-labs/protocol gen:types` to regenerate.",
   ].join("\n");
 
-  const output = `${banner}\n\n${compiled.trim()}\n`;
+  const payloadTypesOutput = `${banner}\n\n${compiled.trim()}\n`;
+  mkdirSync(path.dirname(PAYLOAD_TYPES_PATH), { recursive: true });
+  writeFileSync(PAYLOAD_TYPES_PATH, payloadTypesOutput, "utf8");
 
-  mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
-  writeFileSync(OUTPUT_PATH, output, "utf8");
+  // Embed every catalog entry as a JS literal so runtime validation works
+  // without process.cwd() pointing at the workspace.
+  const catalogEntries = catalog.schemas.map((entry) => ({
+    id: entry.id,
+    schema: entry.schema,
+    sourcePath: entry.sourcePath,
+    ...(entry.contentType ? { contentType: entry.contentType } : {}),
+    ...(entry.claimType ? { claimType: entry.claimType } : {}),
+  }));
+  const schemaCatalogOutput = `${banner}
+
+import type { ExtractedSkillSchema, SkillSchemaCatalog } from "../schemaExtractor.js";
+
+const embeddedSchemas: ExtractedSkillSchema[] = ${JSON.stringify(catalogEntries, null, 2)} as ExtractedSkillSchema[];
+
+const buildCatalog = (entries: ExtractedSkillSchema[]): SkillSchemaCatalog => {
+  const schemasById = new Map<string, ExtractedSkillSchema>();
+  const contentTypeSchemas = new Map<string, ExtractedSkillSchema>();
+  const claimSchemas = new Map<string, ExtractedSkillSchema>();
+  for (const entry of entries) {
+    schemasById.set(entry.id, entry);
+    if (entry.contentType) {
+      const key = \`\${entry.contentType.authorityId}/\${entry.contentType.typeId}/\${entry.contentType.versionMajor}\`;
+      contentTypeSchemas.set(key, entry);
+    }
+    if (entry.claimType) claimSchemas.set(entry.claimType, entry);
+  }
+  return { schemas: entries, schemasById, contentTypeSchemas, claimSchemas };
+};
+
+export const embeddedSchemaCatalog: SkillSchemaCatalog = buildCatalog(embeddedSchemas);
+`;
+  writeFileSync(SCHEMA_CATALOG_PATH, schemaCatalogOutput, "utf8");
+
   console.log(
-    `Wrote ${OUTPUT_PATH} (${PAYLOAD_SPECS.length} payloads + ${Object.keys(mergedDefs).length - PAYLOAD_SPECS.length} shared defs).`,
+    `Wrote ${PAYLOAD_TYPES_PATH} (${PAYLOAD_SPECS.length} payloads + ${Object.keys(mergedDefs).length - PAYLOAD_SPECS.length} shared defs).`,
+  );
+  console.log(
+    `Wrote ${SCHEMA_CATALOG_PATH} (${catalogEntries.length} embedded schemas).`,
   );
 };
 

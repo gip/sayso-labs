@@ -1,6 +1,7 @@
 import * as Ajv2020Module from "ajv/dist/2020.js";
 import * as addFormatsModule from "ajv-formats";
-import { loadSkillSchemaCatalog, type ExtractedSkillSchema, type SkillSchemaCatalog } from "./schemaExtractor.js";
+import { embeddedSchemaCatalog } from "./generated/schemaCatalog.js";
+import type { ExtractedSkillSchema, SkillSchemaCatalog } from "./schemaExtractor.js";
 
 export type PayloadName =
   | "agent-info"
@@ -96,8 +97,10 @@ export type PayloadParseResult<T> =
   | { ok: false; error: string };
 
 export type PayloadValidatorOptions = {
+  // Defaults to the catalog embedded at codegen time (filesystem-free).
+  // Pass a live catalog from loadSkillSchemaCatalog() when validating against
+  // on-disk SKILL.md edits (e.g. `validate:examples`).
   catalog?: SkillSchemaCatalog;
-  root?: string;
 };
 
 export class PayloadValidator {
@@ -106,7 +109,7 @@ export class PayloadValidator {
   constructor(options: PayloadValidatorOptions = {}) {
     this.ajv = new AjvCtor({ strict: false, allErrors: true });
     addFormats(this.ajv);
-    const catalog = options.catalog ?? loadSkillSchemaCatalog(options.root ? { root: options.root } : undefined);
+    const catalog = options.catalog ?? embeddedSchemaCatalog;
     for (const entry of catalog.schemas as ExtractedSkillSchema[]) {
       this.ajv.addSchema(entry.schema);
     }

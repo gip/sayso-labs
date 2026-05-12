@@ -517,7 +517,7 @@ export type ForkOfferPayment =
   | {
       required: true;
       x402Version: number;
-      accepts: X402PaymentRequirements[];
+      accepts: NonEmptyArray<X402PaymentRequirements>;
     };
 
 export type ForkOffer = {
