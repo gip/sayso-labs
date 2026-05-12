@@ -17,8 +17,6 @@
     "@sayso-labs/protocol": "workspace:*",
     "@xmtp/content-type-primitives": "^3.0.1",
     "@xmtp/node-sdk": "6.0.0-dev.4b2b209",
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1",
     "dotenv": "^17.4.2",
     "fastify": "^5.6.2",
     "viem": "^2.48.6",

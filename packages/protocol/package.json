@@ -16,15 +16,21 @@
     }
   },
   "scripts": {
+    "gen:types": "tsx scripts/generate-payload-types.ts",
+    "prebuild": "pnpm run gen:types",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
-    "@xmtp/content-type-primitives": "^3.0.0"
+    "@xmtp/content-type-primitives": "^3.0.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
   },
   "devDependencies": {
     "@types/node": "^24.10.0",
+    "json-schema-to-typescript": "^15.0.4",
+    "tsx": "^4.20.6",
     "vitest": "^4.0.8"
   }
 }

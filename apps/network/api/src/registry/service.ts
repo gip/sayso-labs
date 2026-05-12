@@ -8,12 +8,7 @@ import {
   createNetworkSkillPacket,
   createSkillResponse,
   networkSkillDocuments,
-  parseAgentGet,
-  parseAgentQuery,
-  parsePaymentSubmit,
-  parsePremiumRegistrationSubmit,
-  parseRegistrationRemove,
-  parseRegistrationSubmit,
+  parsePayload,
   premiumRegistrationWriteFromSubmit,
   registrationWriteFromSubmit,
   sanitizeRecordForOwner,
@@ -45,7 +40,6 @@ import {
   AGENT_CONNECTION_CLAIM_TYPE,
   verifyAgentConnectionPresentation,
 } from "./agentConnection.js";
-import { NetworkSchemaValidator } from "./schemaValidator.js";
 import {
   canonicalJson,
   paymentRequirementsFor,
@@ -53,6 +47,11 @@ import {
   type PaymentVerifier,
   type PremiumRegistrationPaymentConfig,
 } from "./payment.js";
+
+const candidateRequestId = (value: unknown): string =>
+  value !== null && typeof value === "object" && "requestId" in value && typeof (value as { requestId: unknown }).requestId === "string"
+    ? (value as { requestId: string }).requestId
+    : "unknown";
 
 export type RegistryAgentConfig = {
   agentId: string;
@@ -81,7 +80,6 @@ type PendingPremiumRegistration = {
 };
 
 export class RegistryService {
-  private readonly schemas = new NetworkSchemaValidator();
   private readonly pendingPremiumRegistrations = new Map<string, PendingPremiumRegistration>();
 
   constructor(
@@ -205,11 +203,9 @@ export class RegistryService {
   }
 
   async handleRegistrationSubmit(sender: VerifiedSenderIdentity, content: unknown): Promise<RegistrationResultPayload> {
-    const parsed = parseRegistrationSubmit(content);
-    if (!parsed) return registrationRejected("unknown", "malformed", "Invalid registration-submit/1 payload.");
-    const schema = this.schemas.validate("registration-submit", parsed);
-    if (!schema.ok) return registrationRejected(parsed.requestId, "malformed", schema.message);
-    return this.register(sender, parsed);
+    const result = parsePayload<RegistrationSubmitPayload>("registration-submit", content);
+    if (!result.ok) return registrationRejected(candidateRequestId(content), "malformed", result.error);
+    return this.register(sender, result.value);
   }
 
   async register(sender: VerifiedSenderIdentity, payload: RegistrationSubmitPayload): Promise<RegistrationResultPayload> {
@@ -227,12 +223,8 @@ export class RegistryService {
     if (agentCollision && agentCollision.agent.syncInboxId !== sender.senderInboxId) {
       return registrationRejected(payload.requestId, "policy", "agentId is already registered by another sync inbox.");
     }
-    if (payload.visibility === "public" && !payload.profile?.description) {
-      return registrationRejected(payload.requestId, "malformed", "Public registrations require profile.description.");
-    }
-    if (payload.profile?.skillDisclosure === "include-skill-packet" && !payload.profile.skillPacket) {
-      return registrationRejected(payload.requestId, "malformed", "include-skill-packet registrations require profile.skillPacket.");
-    }
+    // Cross-field invariants (public ⇒ profile.description, include-skill-packet ⇒ skillPacket)
+    // are enforced upstream by parsePayload("registration-submit") via the SKILL.md schema.
     const record = await this.repository.upsertRegistrationBySyncInbox(registrationWriteFromSubmit(payload, sender.walletAddress));
     return {
       requestId: payload.requestId,
@@ -247,11 +239,9 @@ export class RegistryService {
     sender: VerifiedSenderIdentity,
     content: unknown,
   ): Promise<PaymentRequiredPayload | RegistrationResultPayload> {
-    const parsed = parsePremiumRegistrationSubmit(content);
-    if (!parsed) return registrationRejected("unknown", "malformed", "Invalid premium-registration-submit/1 payload.");
-    const schema = this.schemas.validate("premium-registration-submit", parsed);
-    if (!schema.ok) return registrationRejected(parsed.requestId, "malformed", schema.message);
-    return this.preparePremiumRegistration(sender, parsed);
+    const result = parsePayload<PremiumRegistrationSubmitPayload>("premium-registration-submit", content);
+    if (!result.ok) return registrationRejected(candidateRequestId(content), "malformed", result.error);
+    return this.preparePremiumRegistration(sender, result.value);
   }
 
   async preparePremiumRegistration(
@@ -313,15 +303,11 @@ export class RegistryService {
     sender: VerifiedSenderIdentity,
     content: unknown,
   ): Promise<{ paymentResult: PaymentResultPayload; registrationResult?: RegistrationResultPayload }> {
-    const parsed = parsePaymentSubmit(content);
-    if (!parsed) {
-      return { paymentResult: paymentError("unknown", "payment-invalid", "Invalid payment-submit/1 payload.") };
+    const result = parsePayload<PaymentSubmitPayload>("payment-submit", content);
+    if (!result.ok) {
+      return { paymentResult: paymentError(candidateRequestId(content), "payment-invalid", result.error) };
     }
-    const schema = this.schemas.validate("payment-submit", parsed);
-    if (!schema.ok) {
-      return { paymentResult: paymentError(parsed.requestId, "payment-invalid", schema.message) };
-    }
-    return this.settlePremiumRegistration(sender, parsed);
+    return this.settlePremiumRegistration(sender, result.value);
   }
 
   async settlePremiumRegistration(
@@ -384,11 +370,9 @@ export class RegistryService {
   }
 
   async handleRegistrationRemove(senderInboxId: string, content: unknown): Promise<RegistrationResultPayload> {
-    const parsed = parseRegistrationRemove(content);
-    if (!parsed) return registrationRejected("unknown", "malformed", "Invalid registration-remove/1 payload.");
-    const schema = this.schemas.validate("registration-remove", parsed);
-    if (!schema.ok) return registrationRejected(parsed.requestId, "malformed", schema.message);
-    return this.remove(senderInboxId, parsed);
+    const result = parsePayload<RegistrationRemovePayload>("registration-remove", content);
+    if (!result.ok) return registrationRejected(candidateRequestId(content), "malformed", result.error);
+    return this.remove(senderInboxId, result.value);
   }
 
   async remove(senderInboxId: string, payload: RegistrationRemovePayload): Promise<RegistrationResultPayload> {
@@ -408,11 +392,9 @@ export class RegistryService {
   }
 
   async handleAgentQuery(content: unknown): Promise<AgentQueryResponsePayload | ErrorPayload> {
-    const parsed = parseAgentQuery(content);
-    if (!parsed) return createError("malformed", "Invalid agent-query/1 payload.");
-    const schema = this.schemas.validate("agent-query", parsed);
-    if (!schema.ok) return createError("malformed", schema.message, parsed.requestId);
-    return this.query(parsed);
+    const result = parsePayload<AgentQueryPayload>("agent-query", content);
+    if (!result.ok) return createError("malformed", result.error, candidateRequestId(content));
+    return this.query(result.value);
   }
 
   async query(payload: AgentQueryPayload): Promise<AgentQueryResponsePayload> {
@@ -425,11 +407,9 @@ export class RegistryService {
   }
 
   async handleAgentGet(senderInboxId: string, content: unknown): Promise<AgentGetResponsePayload | ErrorPayload> {
-    const parsed = parseAgentGet(content);
-    if (!parsed) return createError("malformed", "Invalid agent-get/1 payload.");
-    const schema = this.schemas.validate("agent-get", parsed);
-    if (!schema.ok) return createError("malformed", schema.message, parsed.requestId);
-    return this.get(senderInboxId, parsed);
+    const result = parsePayload<AgentGetPayload>("agent-get", content);
+    if (!result.ok) return createError("malformed", result.error, candidateRequestId(content));
+    return this.get(senderInboxId, result.value);
   }
 
   async get(senderInboxId: string, payload: AgentGetPayload): Promise<AgentGetResponsePayload> {

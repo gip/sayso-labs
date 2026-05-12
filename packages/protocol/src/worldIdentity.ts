@@ -1,5 +1,5 @@
 import { SAYSO_WORLD_ID_ACTION } from "./constants.js";
-import { isRecord } from "./validation.js";
+import { isRecord } from "./predicates.js";
 import type { ClaimPresentation, VerifiedClaim } from "./types.js";
 
 export const WORLD_ID_WALLET_CLAIM_TYPE = "sayso.claim.world-id.wallet";
