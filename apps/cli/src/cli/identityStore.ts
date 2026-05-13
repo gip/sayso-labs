@@ -1,14 +1,11 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
-import { homedir } from "node:os";
 import path from "node:path";
+import { resolveSaySoHome } from "@sayso-labs/local-core";
 import type { StoredAgent, StoredIdentity } from "@sayso-labs/identity";
 
 export const resolveIdentityStorePath = (env: NodeJS.ProcessEnv = process.env): string => {
   if (env.SAYSO_IDENTITY_FILE && env.SAYSO_IDENTITY_FILE.length > 0) return env.SAYSO_IDENTITY_FILE;
-  const home = env.SAYSO_HOME && env.SAYSO_HOME.length > 0
-    ? env.SAYSO_HOME
-    : path.join(env.HOME ?? homedir(), ".config", "sayso");
-  return path.join(home, "identities.json");
+  return path.join(resolveSaySoHome(env), "identities.json");
 };
 
 export type IdentityStoreFile = {

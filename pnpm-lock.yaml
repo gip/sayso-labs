@@ -23,6 +23,9 @@ importers:
       '@sayso-labs/identity':
         specifier: workspace:*
         version: link:../../packages/identity
+      '@sayso-labs/local-core':
+        specifier: workspace:*
+        version: link:../../packages/local-core
       '@sayso-labs/protocol':
         specifier: workspace:*
         version: link:../../packages/protocol
