@@ -37,6 +37,7 @@ export const DEFAULT_SCHEMA_SKILL_PATHS = [
   "skills/sayso-runtime/SKILL.md",
   "examples/skills/pong/SKILL.md",
   "examples/skills/reference-implementations/SKILL.md",
+  "examples/skills/sayso-identity/SKILL.md",
 ];
 
 export const schemaContentTypeKey = (contentType: SchemaContentType) =>

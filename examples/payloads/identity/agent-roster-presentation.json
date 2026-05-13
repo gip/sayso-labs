@@ -1,0 +1,61 @@
+{
+  "type": "sayso.identity.agent-roster",
+  "payload": {
+    "identityHandle": "sayso:identity:w2ihgx3puzmiaxixkz6zx5b7n6",
+    "agents": [
+      {
+        "index": 0,
+        "label": "Default",
+        "addresses": [
+          {
+            "type": "ethereum",
+            "address": "0x9858effd232b4033e47d90003d41ec34ecaeda94",
+            "derivationPath": "m/44'/60'/0'/0/0"
+          },
+          {
+            "type": "bitcoin",
+            "address": "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu",
+            "derivationPath": "m/84'/0'/0'/0/0"
+          },
+          {
+            "type": "ripple",
+            "address": "rHsMGQEkVNJmpGWs8XUBoTBiAAbwxZN5v3",
+            "derivationPath": "m/44'/144'/0'/0/0"
+          },
+          {
+            "type": "stellar",
+            "address": "GB3JDWCQJCWMJ3IILWIGDTQJJC5567PGVEVXSCVPEQOTDN64VJBDQBYX",
+            "derivationPath": "m/44'/148'/0'"
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "label": "Trading",
+        "addresses": [
+          {
+            "type": "ethereum",
+            "address": "0x78839f6054d7ed13918bae0473ba31b1ca9d7265",
+            "derivationPath": "m/44'/60'/1'/0/0"
+          },
+          {
+            "type": "bitcoin",
+            "address": "bc1qku0qh0mc00y8tk0n65x2tqw4trlspak0fnjmfz",
+            "derivationPath": "m/84'/0'/1'/0/0"
+          },
+          {
+            "type": "ripple",
+            "address": "rNAB7uPziNwZAkdzyeo6xRA9pKTsJxZ6td",
+            "derivationPath": "m/44'/144'/1'/0/0"
+          },
+          {
+            "type": "stellar",
+            "address": "GDVSYYTUAJ3ACHTPQNSTQBDQ4LDHQCMNY4FCEQH5TJUMSSLWQSTG42MV",
+            "derivationPath": "m/44'/148'/1'"
+          }
+        ]
+      }
+    ],
+    "timestamp": "2026-05-12T00:00:00.000Z"
+  }
+}

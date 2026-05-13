@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Plus, Search } from "lucide-react";
 import type { AgentSkillContract, SkillPacket as ProtocolSkillPacket, SaySoSkillDocument } from "@sayso-labs/protocol/browser";
+import type { AgentAddresses, StoredAgent, StoredIdentity } from "@sayso-labs/identity";
 import { exploreSaySoAgent, type ExplorerProbeResult } from "../../xmtpExplorer.js";
 import { CapabilityCards } from "../../components/CapabilityCards.js";
 import { ChannelCards } from "../../components/ChannelCards.js";
@@ -10,14 +11,19 @@ import { contentTypeName } from "../../components/util.js";
 import { useEnvironment } from "../../state/environment.js";
 import { useSetStatusContext } from "../../state/statusContext.js";
 import {
-  createStoredExplorerIdentity,
-  deriveExplorerIdentity,
-  explorerActiveStorageKey,
-  explorerStorageKey,
-  readStoredExplorerActiveId,
-  readStoredExplorerIdentities,
-  type StoredExplorerIdentity,
-} from "../../state/storage.js";
+  addressesForAgent,
+  ethPrivateKeyForAgent,
+  provisionAgent,
+  provisionIdentity,
+  readActiveAgentId,
+  readActiveIdentityId,
+  readStoredAgents,
+  readStoredIdentities,
+  writeActiveAgentId,
+  writeActiveIdentityId,
+  writeStoredAgents,
+  writeStoredIdentities,
+} from "../../state/identityStorage.js";
 
 type LoadState<T> =
   | { status: "loading" }
@@ -27,47 +33,71 @@ type LoadState<T> =
 export function Explorer() {
   const { address: addressParam } = useParams<{ address?: string }>();
   const [environment] = useEnvironment();
-  const [storedIdentities, setStoredIdentities] = useState<StoredExplorerIdentity[]>(readStoredExplorerIdentities);
-  const [activeId, setActiveId] = useState<string | null>(readStoredExplorerActiveId);
+  const [identities, setIdentities] = useState<StoredIdentity[]>(readStoredIdentities);
+  const [agents, setAgents] = useState<StoredAgent[]>(readStoredAgents);
+  const [activeIdentityId, setActiveIdentityId] = useState<string | null>(readActiveIdentityId);
+  const [activeAgentId, setActiveAgentId] = useState<string | null>(readActiveAgentId);
   const [targetAddress, setTargetAddress] = useState(addressParam ?? "");
   const [result, setResult] = useState<LoadState<ExplorerProbeResult> | null>(null);
 
-  const identities = useMemo(() => storedIdentities.map(deriveExplorerIdentity), [storedIdentities]);
-  const activeIdentity = identities.find((identity) => identity.id === activeId) ?? identities[0] ?? null;
+  const activeIdentity = useMemo(
+    () => identities.find((entry) => entry.id === activeIdentityId) ?? identities[0] ?? null,
+    [identities, activeIdentityId],
+  );
+  const identityAgents = useMemo(
+    () => (activeIdentity ? agents.filter((entry) => entry.identityId === activeIdentity.id) : []),
+    [activeIdentity, agents],
+  );
+  const activeAgent = useMemo(
+    () => identityAgents.find((entry) => entry.id === activeAgentId) ?? identityAgents[0] ?? null,
+    [identityAgents, activeAgentId],
+  );
+  const activeAddresses: AgentAddresses | null = useMemo(
+    () => (activeIdentity && activeAgent ? addressesForAgent(activeIdentity, activeAgent) : null),
+    [activeIdentity, activeAgent],
+  );
 
-  useSetStatusContext(activeIdentity ? activeIdentity.addresses.eth : "no explorer address");
+  useSetStatusContext(
+    activeIdentity && activeAgent && activeAddresses
+      ? `${activeIdentity.label} / ${activeAgent.label} / ${activeAddresses.ethereum.address}`
+      : "no identity",
+  );
 
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(explorerStorageKey, JSON.stringify(storedIdentities));
-    } catch {
-      // localStorage can be unavailable in constrained browser contexts.
-    }
-  }, [storedIdentities]);
+  useEffect(() => { writeStoredIdentities(identities); }, [identities]);
+  useEffect(() => { writeStoredAgents(agents); }, [agents]);
+  useEffect(() => { writeActiveIdentityId(activeIdentity?.id ?? null); }, [activeIdentity]);
+  useEffect(() => { writeActiveAgentId(activeAgent?.id ?? null); }, [activeAgent]);
 
-  useEffect(() => {
-    try {
-      if (activeIdentity) window.localStorage.setItem(explorerActiveStorageKey, activeIdentity.id);
-      else window.localStorage.removeItem(explorerActiveStorageKey);
-    } catch {
-      // localStorage can be unavailable in constrained browser contexts.
-    }
-  }, [activeIdentity]);
-
-  const createIdentity = () => {
-    const stored = createStoredExplorerIdentity();
-    setStoredIdentities((current) => [stored, ...current]);
-    setActiveId(stored.id);
+  const createIdentity = async () => {
+    const label = `Identity ${identities.length + 1}`;
+    const { identity, defaultAgent } = await provisionIdentity(label);
+    setIdentities((current) => [identity, ...current]);
+    setAgents((current) => [defaultAgent, ...current]);
+    setActiveIdentityId(identity.id);
+    setActiveAgentId(defaultAgent.id);
     setResult(null);
   };
 
+  const addAgent = () => {
+    if (!activeIdentity) return;
+    const label = `Agent ${activeIdentity.nextAgentIndex}`;
+    const { identity: updated, agent } = provisionAgent(activeIdentity, label);
+    setIdentities((current) => current.map((entry) => (entry.id === updated.id ? updated : entry)));
+    setAgents((current) => [...current, agent]);
+    setActiveAgentId(agent.id);
+  };
+
   const startExplore = async () => {
-    if (!activeIdentity) {
-      setResult({ status: "error", message: "Create an address before exploring." });
+    if (!activeIdentity || !activeAgent || !activeAddresses) {
+      setResult({ status: "error", message: "Create an identity and agent before exploring." });
       return;
     }
     setResult({ status: "loading" });
-    setResult({ status: "ready", value: await exploreSaySoAgent({ identity: activeIdentity, env: environment, targetAddress }) });
+    const caller = {
+      ethAddress: activeAddresses.ethereum.address,
+      ethPrivateKey: ethPrivateKeyForAgent(activeIdentity, activeAgent),
+    };
+    setResult({ status: "ready", value: await exploreSaySoAgent({ caller, env: environment, targetAddress }) });
   };
 
   return (
@@ -75,38 +105,79 @@ export function Explorer() {
       <section className="explorer-toolbar" aria-label="Explorer controls">
         <button className="primary-button" onClick={createIdentity} type="button">
           <Plus size={15} />
-          Create address
+          Create identity
         </button>
+        {activeIdentity ? (
+          <button className="secondary-button" onClick={addAgent} type="button">
+            <Plus size={15} />
+            Add agent
+          </button>
+        ) : null}
       </section>
 
       <section className="explorer-grid">
-        <aside className="explorer-identities" aria-label="Generated addresses">
+        <aside className="explorer-identities" aria-label="Identities and agents">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Generated identities</p>
-              <h1 className="compact-title">Addresses</h1>
+              <p className="eyebrow">Identities</p>
+              <h1 className="compact-title">Vaults</h1>
             </div>
             <span className="badge">{identities.length.toLocaleString()}</span>
           </div>
           {identities.length === 0 ? (
-            <div className="list-state empty">Create an address to start exploring.</div>
+            <div className="list-state empty">Create an identity to start.</div>
           ) : (
             <div className="identity-list">
               {identities.map((identity) => (
                 <button
                   className={identity.id === activeIdentity?.id ? "identity-row selected" : "identity-row"}
                   key={identity.id}
-                  onClick={() => setActiveId(identity.id)}
+                  onClick={() => setActiveIdentityId(identity.id)}
                   type="button"
                 >
-                  <AddressLine label="ETH" value={identity.addresses.eth} />
-                  <AddressLine label="BTC" value={identity.addresses.btc} />
-                  <AddressLine label="XRP" value={identity.addresses.xrp} />
-                  <AddressLine label="XLM" value={identity.addresses.xlm} />
+                  <span className="address-line"><strong>{identity.label}</strong></span>
+                  <span className="address-line" title={identity.identityHandle}>
+                    <span>{identity.identityHandle}</span>
+                  </span>
                 </button>
               ))}
             </div>
           )}
+
+          {activeIdentity ? (
+            <>
+              <div className="section-heading" style={{ marginTop: "1rem" }}>
+                <div>
+                  <p className="eyebrow">Agents</p>
+                  <h2 className="compact-title">Under {activeIdentity.label}</h2>
+                </div>
+                <span className="badge">{identityAgents.length.toLocaleString()}</span>
+              </div>
+              {identityAgents.length === 0 ? (
+                <div className="list-state empty">Click "Add agent" to derive a new agent.</div>
+              ) : (
+                <div className="identity-list">
+                  {identityAgents.map((agent) => {
+                    const addresses = addressesForAgent(activeIdentity, agent);
+                    return (
+                      <button
+                        className={agent.id === activeAgent?.id ? "identity-row selected" : "identity-row"}
+                        key={`${agent.id}-${agent.index}`}
+                        onClick={() => setActiveAgentId(agent.id)}
+                        type="button"
+                      >
+                        <span className="address-line"><strong>{agent.label}</strong> (index {agent.index})</span>
+                        <AddressLine label="ETH" value={addresses.ethereum.address} />
+                        <AddressLine label="BTC" value={addresses.bitcoin.address} />
+                        <AddressLine label="XRP" value={addresses.ripple.address} />
+                        <AddressLine label="XLM" value={addresses.stellar.address} />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          ) : null}
         </aside>
 
         <section className="explorer-main" aria-label="Agent explorer">

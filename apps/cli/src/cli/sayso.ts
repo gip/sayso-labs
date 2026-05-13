@@ -2,6 +2,7 @@
 import "dotenv/config";
 import { Command } from "commander";
 import { fetchLocalBackendHealth, startLocalBackend, stopLocalBackend } from "./localBackend.js";
+import { registerIdentityCommands } from "./identityCommands.js";
 
 const program = new Command();
 
@@ -23,5 +24,7 @@ backend.command("start").description("Start personal service if needed.").action
 backend.command("stop").description("Stop the personal service.").action(async () => {
   console.dir(await stopLocalBackend(), { depth: null });
 });
+
+registerIdentityCommands(program);
 
 await program.parseAsync();

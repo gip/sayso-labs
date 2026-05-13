@@ -4132,6 +4132,100 @@ const embeddedSchemas: ExtractedSkillSchema[] = [
       "versionMajor": 1,
       "versionMinor": 0
     }
+  },
+  {
+    "id": "sayso://sayso.identity/agent-roster",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "sayso://sayso.identity/agent-roster",
+      "title": "SaySo identity agent roster presentation",
+      "x-sayso-claim-type": "sayso.identity.agent-roster",
+      "type": "object",
+      "required": [
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "sayso.identity.agent-roster"
+        },
+        "payload": {
+          "type": "object",
+          "required": [
+            "identityHandle",
+            "agents",
+            "timestamp"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "identityHandle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "agents": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "index",
+                  "addresses"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "addresses": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "type",
+                        "address",
+                        "derivationPath"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "ethereum",
+                            "bitcoin",
+                            "ripple",
+                            "stellar"
+                          ]
+                        },
+                        "address": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "derivationPath": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "timestamp": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "sourcePath": "examples/skills/sayso-identity/SKILL.md",
+    "claimType": "sayso.identity.agent-roster"
   }
 ] as ExtractedSkillSchema[];
 

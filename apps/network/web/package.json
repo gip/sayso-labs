@@ -14,6 +14,7 @@
     "@noble/hashes": "^2.2.0",
     "@scure/base": "^2.2.0",
     "@vitejs/plugin-react": "^5.1.0",
+    "@sayso-labs/identity": "workspace:^",
     "@sayso-labs/protocol": "workspace:^",
     "@xmtp/browser-sdk": "7.0.0",
     "@xmtp/proto": "3.90.0",

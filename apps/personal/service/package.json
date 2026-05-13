@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@sayso-labs/db-sqlite": "workspace:*",
+    "@sayso-labs/identity": "workspace:*",
     "@sayso-labs/local-core": "workspace:*",
     "fastify": "^5.6.2"
   },
