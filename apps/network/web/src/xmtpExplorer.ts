@@ -10,7 +10,10 @@ import {
   type SkillPacket,
   type XmtpEnv,
 } from "@sayso-labs/protocol/browser";
-import type { ExplorerIdentity } from "./explorerIdentity.js";
+export type ExplorerCallerKey = {
+  ethAddress: string;
+  ethPrivateKey: `0x${string}`;
+};
 
 const defaultInitialWaitMs = 4_000;
 const defaultResponseWaitMs = 20_000;
@@ -144,7 +147,7 @@ const packageFromMessage = (message: SaySoMessage): ExplorerPackage | null => {
 };
 
 export const exploreSaySoAgent = async (input: {
-  identity: ExplorerIdentity;
+  caller: ExplorerCallerKey;
   env: XmtpEnv;
   targetAddress: string;
   initialWaitMs?: number;
@@ -173,7 +176,7 @@ export const exploreSaySoAgent = async (input: {
 
   let client: Client<JsonPayload | string> | undefined;
   try {
-    client = await withTimeout("Creating browser XMTP client", Client.create(createEOASigner(input.identity.ethPrivateKey), ({
+    client = await withTimeout("Creating browser XMTP client", Client.create(createEOASigner(input.caller.ethPrivateKey), ({
       env: input.env as never,
       codecs: saysoCodecs as never,
       appVersion: "sayso-labs-web/0",
@@ -193,7 +196,7 @@ export const exploreSaySoAgent = async (input: {
       return {
         status: "sayso",
         env: input.env,
-        clientAddress: input.identity.addresses.eth,
+        clientAddress: input.caller.ethAddress,
         clientInboxId,
         targetAddress,
         package: initialPackage,
@@ -212,7 +215,7 @@ export const exploreSaySoAgent = async (input: {
       return {
         status: "timeout",
         env: input.env,
-        clientAddress: input.identity.addresses.eth,
+        clientAddress: input.caller.ethAddress,
         clientInboxId,
         targetAddress,
         message: "Timed out waiting for a SaySo response.",
@@ -226,7 +229,7 @@ export const exploreSaySoAgent = async (input: {
         return {
           status: "sayso-error",
           env: input.env,
-          clientAddress: input.identity.addresses.eth,
+          clientAddress: input.caller.ethAddress,
           clientInboxId,
           targetAddress,
           contentType: contentTypeName(CONTENT_TYPES.connectionResponse),
@@ -239,7 +242,7 @@ export const exploreSaySoAgent = async (input: {
       return {
         status: "non-sayso",
         env: input.env,
-        clientAddress: input.identity.addresses.eth,
+        clientAddress: input.caller.ethAddress,
         clientInboxId,
         targetAddress,
         contentType: responseMessage.contentType ? contentTypeName(responseMessage.contentType) : undefined,
@@ -250,7 +253,7 @@ export const exploreSaySoAgent = async (input: {
     return {
       status: "sayso",
       env: input.env,
-      clientAddress: input.identity.addresses.eth,
+      clientAddress: input.caller.ethAddress,
       clientInboxId,
       targetAddress,
       package: responsePackage,
@@ -259,7 +262,7 @@ export const exploreSaySoAgent = async (input: {
     return {
       status: "error",
       env: input.env,
-      clientAddress: input.identity.addresses.eth,
+      clientAddress: input.caller.ethAddress,
       clientInboxId: client?.inboxId,
       targetAddress,
       message: error instanceof Error ? error.message : "Explorer failed.",

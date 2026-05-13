@@ -323,37 +323,60 @@ describe("App", () => {
     expect(screen.queryByText("Claim types")).not.toBeInTheDocument();
   });
 
-  it("renders the explorer, persists generated seed identities, and restores them", async () => {
+  it("renders the explorer, persists a created identity with a default agent, and restores them", async () => {
     const { unmount } = renderAt(["/"]);
 
     fireEvent.click(screen.getByRole("link", { name: "Explorer" }));
 
     expect(screen.getByRole("button", { name: "Dev" })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(screen.getByRole("button", { name: "Create address" }));
+    fireEvent.click(screen.getByRole("button", { name: "Create identity" }));
 
     expect(await screen.findByText("ETH")).toBeInTheDocument();
     expect(screen.getByText("BTC")).toBeInTheDocument();
     expect(screen.getByText("XRP")).toBeInTheDocument();
     expect(screen.getByText("XLM")).toBeInTheDocument();
-    const stored = JSON.parse(window.localStorage.getItem("sayso:network-explorer:v1") ?? "[]") as Array<{ seedHex: string }>;
-    expect(stored).toHaveLength(1);
-    expect(stored[0].seedHex).toMatch(/^(07){32}$/);
+    const storedIdentities = JSON.parse(window.localStorage.getItem("sayso:identity:v2") ?? "[]") as Array<{ identityHandle: string }>;
+    expect(storedIdentities).toHaveLength(1);
+    expect(storedIdentities[0].identityHandle).toMatch(/^sayso:identity:/);
+    const storedAgents = JSON.parse(window.localStorage.getItem("sayso:identity:agents:v2") ?? "[]") as Array<{ index: number }>;
+    expect(storedAgents).toHaveLength(1);
+    expect(storedAgents[0].index).toBe(0);
+
+    fireEvent.click(screen.getByRole("button", { name: "Add agent" }));
+    const moreAgents = JSON.parse(window.localStorage.getItem("sayso:identity:agents:v2") ?? "[]") as Array<{ index: number }>;
+    expect(moreAgents).toHaveLength(2);
+    expect(moreAgents.map((a) => a.index).sort()).toEqual([0, 1]);
 
     unmount();
     cleanup();
     renderAt(["/explorer"]);
 
     expect(screen.getByRole("link", { name: "Explorer" })).toHaveClass("active");
-    expect(await screen.findByText("ETH")).toBeInTheDocument();
-    expect(JSON.parse(window.localStorage.getItem("sayso:network-explorer:v1") ?? "[]")).toHaveLength(1);
+    expect((await screen.findAllByText("ETH")).length).toBe(2);
+    expect(JSON.parse(window.localStorage.getItem("sayso:identity:v2") ?? "[]")).toHaveLength(1);
+    expect(JSON.parse(window.localStorage.getItem("sayso:identity:agents:v2") ?? "[]")).toHaveLength(2);
   });
 
   it("explores an agent and renders the first SaySo package details", async () => {
+    const seededIdentity = {
+      id: "stored-identity",
+      label: "Stored",
+      createdAt: "2026-05-03T00:00:00.000Z",
+      identityHandle: "sayso:identity:teststoredhandle",
+      nextAgentIndex: 1,
+      mnemonic: {
+        kind: "plaintext",
+        mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+      },
+    };
+    window.localStorage.setItem("sayso:identity:v2", JSON.stringify([seededIdentity]));
     window.localStorage.setItem(
-      "sayso:network-explorer:v1",
+      "sayso:identity:agents:v2",
       JSON.stringify([{
-        id: "stored",
-        seedHex: "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+        id: "stored-agent",
+        identityId: "stored-identity",
+        index: 0,
+        label: "Agent 0",
         createdAt: "2026-05-03T00:00:00.000Z",
       }]),
     );
