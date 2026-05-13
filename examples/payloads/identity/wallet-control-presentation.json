@@ -1,0 +1,93 @@
+{
+  "type": "sayso.claim.wallet-control",
+  "payload": {
+    "message": {
+      "claim": "I control these wallets",
+      "wallets": [
+        {
+          "type": "ethereum",
+          "address": "0x9858effd232b4033e47d90003d41ec34ecaeda94"
+        },
+        {
+          "type": "bitcoin",
+          "address": "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu"
+        },
+        {
+          "type": "ripple",
+          "address": "rHsMGQEkVNJmpGWs8XUBoTBiAAbwxZN5v3"
+        },
+        {
+          "type": "stellar",
+          "address": "GB3JDWCQJCWMJ3IILWIGDTQJJC5567PGVEVXSCVPEQOTDN64VJBDQBYX"
+        },
+        {
+          "type": "ethereum",
+          "address": "0x78839f6054d7ed13918bae0473ba31b1ca9d7265"
+        },
+        {
+          "type": "bitcoin",
+          "address": "bc1qku0qh0mc00y8tk0n65x2tqw4trlspak0fnjmfz"
+        },
+        {
+          "type": "ripple",
+          "address": "rNAB7uPziNwZAkdzyeo6xRA9pKTsJxZ6td"
+        },
+        {
+          "type": "stellar",
+          "address": "GDVSYYTUAJ3ACHTPQNSTQBDQ4LDHQCMNY4FCEQH5TJUMSSLWQSTG42MV"
+        }
+      ],
+      "timestamp": "2026-05-12T00:00:00.000Z"
+    },
+    "signatures": [
+      {
+        "type": "ethereum",
+        "address": "0x9858effd232b4033e47d90003d41ec34ecaeda94",
+        "signatureScheme": "eip191",
+        "signature": "0x4965f092d9104a31f98d14c8096ec67d92cb16cf27a1159c8d12f5f033f4a28c49764dec8a915bfe0aecfad6b43391a987861d02b9870caf444ea436488662021b"
+      },
+      {
+        "type": "bitcoin",
+        "address": "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu",
+        "signatureScheme": "sayso-bitcoin-v1",
+        "signature": "37003a0ac33dce22f81c1052aab19ad322f0639bd931dee7499dea9e0dabd7113715ef2161fbdaf4ef80efcfd0e39163110d8d83b326a144dd2c63b15511411c01"
+      },
+      {
+        "type": "ripple",
+        "address": "rHsMGQEkVNJmpGWs8XUBoTBiAAbwxZN5v3",
+        "signatureScheme": "sayso-ripple-v1",
+        "signature": "2c89f2b77a707cc4e02d5bfe6663215b38377bff6a478e8c0ceedf5c18ef81af2e1940ab313558967d37b4a5941648050075ac0d20b3af0fcb4b86b80ef23ae200"
+      },
+      {
+        "type": "stellar",
+        "address": "GB3JDWCQJCWMJ3IILWIGDTQJJC5567PGVEVXSCVPEQOTDN64VJBDQBYX",
+        "signatureScheme": "sayso-stellar-v1",
+        "signature": "MaQEcd7nM18BOLGnTjByiPeEW3imQpElyjSDBoLFnL+ce6aoV1cliat4OFGJP6aV40+Q4M8EiGo6T1CCizhdCQ=="
+      },
+      {
+        "type": "ethereum",
+        "address": "0x78839f6054d7ed13918bae0473ba31b1ca9d7265",
+        "signatureScheme": "eip191",
+        "signature": "0xb332ce881afbaa6f40647edfb60e70a90872f14f958316c2c5af78235f47028649296f64ee1aedf09ecccf5bbe983387e54483c4d67395433f3339f7a7b86add1b"
+      },
+      {
+        "type": "bitcoin",
+        "address": "bc1qku0qh0mc00y8tk0n65x2tqw4trlspak0fnjmfz",
+        "signatureScheme": "sayso-bitcoin-v1",
+        "signature": "0dd58db692f95ed57bf196be8a2777f3ea62bc7f978ae01924aa5006609f582c4dc4215d318084d7186311010753fae449e48290f1c751f1fdb1b379bbf54f2701"
+      },
+      {
+        "type": "ripple",
+        "address": "rNAB7uPziNwZAkdzyeo6xRA9pKTsJxZ6td",
+        "signatureScheme": "sayso-ripple-v1",
+        "signature": "d983410e76a70bef01c35195928c17efb846399929d9bf47c253bf59961eba4d50da8cd0a57dba0b6a2f3b69e551e898d130405a6118c988286742fcd2aa80c000"
+      },
+      {
+        "type": "stellar",
+        "address": "GDVSYYTUAJ3ACHTPQNSTQBDQ4LDHQCMNY4FCEQH5TJUMSSLWQSTG42MV",
+        "signatureScheme": "sayso-stellar-v1",
+        "signature": "m2k0qk1Fal0qmyMKbnZNSjW67GNF5c1gECq8B3UneAQaEpbJpkjguWXN6YXJq1qneRb+1W1mYerb0kDIAN5MCQ=="
+      }
+    ]
+  }
+}

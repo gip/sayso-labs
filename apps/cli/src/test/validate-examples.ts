@@ -169,6 +169,8 @@ const pairs: Record<string, string> = {
     "sayso://sayso.claim/agent-connection",
   "payloads/identity/agent-roster-presentation.json":
     "sayso://sayso.identity/agent-roster",
+  "payloads/identity/wallet-control-presentation.json":
+    "sayso://sayso.claim/wallet-control",
   "payloads/reference-implementations/implementation-list-request.json":
     "sayso://sayso.reference-implementations/implementation-list-request/1",
   "payloads/reference-implementations/implementation-list-response.json":

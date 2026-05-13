@@ -11,7 +11,18 @@ import {
   XRP_PATH,
 } from "./derive.js";
 import { decryptMnemonic, encryptMnemonic } from "./encrypt.js";
-import { signMessageWithAgentKeys, verifyEthereumEip191 } from "./sign.js";
+import {
+  signMessageWithAgentKeys,
+  verifyEthereumEip191,
+  verifyBitcoinSaysoV1,
+  verifyRippleSaysoV1,
+  verifyStellarSaysoV1,
+  verifySaysoChainSignature,
+  EIP191_SCHEME,
+  SAYSO_BITCOIN_SCHEME,
+  SAYSO_RIPPLE_SCHEME,
+  SAYSO_STELLAR_SCHEME,
+} from "./sign.js";
 import { buildAgentRoster, buildWalletControlClaim, rosterIdentityHandleFor } from "./presentations.js";
 import type {
   AgentAddress,
@@ -57,6 +68,14 @@ export {
   rosterIdentityHandleFor,
   signMessageWithAgentKeys,
   verifyEthereumEip191,
+  verifyBitcoinSaysoV1,
+  verifyRippleSaysoV1,
+  verifyStellarSaysoV1,
+  verifySaysoChainSignature,
+  EIP191_SCHEME,
+  SAYSO_BITCOIN_SCHEME,
+  SAYSO_RIPPLE_SCHEME,
+  SAYSO_STELLAR_SCHEME,
   BTC_PATH,
   ETH_PATH,
   XLM_PATH,

@@ -159,13 +159,91 @@ Verifier expectations:
   accompanying `sayso.claim.wallet-control` presentation to treat any listed
   address as controlled by the sender.
 
+## Signature Schemes
+
+This section is normative for hosts that produce or consume
+`sayso.claim.wallet-control` presentations referencing addresses derived under
+this skill. Each chain pins one `signatureScheme` string. The exact
+construction is byte-precise so that an independent verifier can check a
+signature using only the wire payload, the claimed address, and a standard
+curve library.
+
+The plaintext input to all four schemes is the JSON `message` object carried
+by `sayso.claim.wallet-control` (`claim`, `wallets`, `timestamp`), serialized
+exactly as it appears on the wire and passed in as the `message` string
+referenced below.
+
+### `eip191` (Ethereum, `type: "ethereum"`)
+
+- Hash input: `0x19 || "Ethereum Signed Message:\n" || decimal_length(message) || message`
+  (standard EIP-191).
+- Hash function: `keccak256`.
+- Curve: secp256k1, RFC 6979 deterministic ECDSA, low-S enforced.
+- Signature encoding: 65 hex bytes `r (32) || s (32) || v (1)` where
+  `v = 27 + recovery`. Prefixed `0x`.
+- Verification: standard ecrecover-then-keccak256-then-compare-to-address.
+
+### `sayso-bitcoin-v1` (Bitcoin, `type: "bitcoin"`)
+
+- Hash input: `"sayso.identity/bitcoin/v1:" || message` (UTF-8 bytes).
+- Hash function: `sha256`.
+- Curve: secp256k1, RFC 6979 deterministic ECDSA, low-S enforced.
+- Signature encoding: 65 hex bytes `r (32) || s (32) || recovery (1)`
+  where `recovery` is `0` or `1` (no Ethereum `+27` offset). No `0x` prefix.
+- Address: bech32 P2WPKH, witness version 0, mainnet `bc` or testnet `tb`.
+- Verification: recover the compressed secp256k1 public key from
+  `(r, s, recovery, digest)`, compute `hash160(pubkey)`, bech32-encode with
+  the address's HRP and witness version 0, compare to the claimed address.
+
+### `sayso-ripple-v1` (XRP Ledger, `type: "ripple"`)
+
+- Hash input: `"sayso.identity/ripple/v1:" || message` (UTF-8 bytes).
+- Hash function: `sha256`.
+- Curve: secp256k1, RFC 6979 deterministic ECDSA, low-S enforced.
+- Signature encoding: 65 hex bytes `r (32) || s (32) || recovery (1)`
+  where `recovery` is `0` or `1`. No prefix.
+- Address: classic r-address — `base58xrp(0x00 || hash160(pubkey) || checksum)`
+  where `checksum` is the first 4 bytes of `sha256(sha256(version || hash160))`.
+- Verification: recover the compressed secp256k1 public key from
+  `(r, s, recovery, digest)`, recompute the classic r-address, compare to
+  the claimed address.
+
+### `sayso-stellar-v1` (Stellar, `type: "stellar"`)
+
+- Signed input: `"sayso.identity/stellar/v1:" || message` (UTF-8 bytes).
+  No external prehash (ed25519 hashes the message internally as part of
+  the signing protocol).
+- Curve: Ed25519 (RFC 8032).
+- Signature encoding: 64 raw bytes, base64-encoded (RFC 4648, padded).
+- Address: strkey G-account — `base32(version=0x30 || pubkey(32) || crc16-xmodem(2))`,
+  padding stripped, per SEP-23.
+- Verification: decode the strkey to extract the 32-byte ed25519 public key,
+  base64-decode the signature, verify with the standard ed25519 verify
+  algorithm against the signed input bytes.
+
+### Notes for all schemes
+
+- The `message` value referenced above is the **same string** for every
+  signature in a single `wallet-control` payload — typically a canonical JSON
+  rendering of `payload.message`. Producers and verifiers MUST use byte-identical
+  serializations. Until this skill mandates a canonical form (e.g. RFC 8785),
+  hosts SHOULD compose `payload.message` themselves and avoid passing it
+  through JSON re-serializers that change key order.
+- Producers MUST emit deterministic signatures (RFC 6979 for secp256k1, native
+  determinism for ed25519). This keeps test vectors reproducible.
+- Verifiers MUST reject signatures whose `signatureScheme` does not match the
+  expected string for the listed `type`. A `signatureScheme` not listed in
+  this section is unsupported by this skill; receivers MAY still accept it
+  if they implement the named scheme independently.
+
 ## Linkage With `sayso.claim`
 
 To prove that the Agents in a roster are controlled by the sender, accompany
 the roster with a `sayso.claim.wallet-control` presentation whose `wallets[]`
 covers the same set of `(type, address)` pairs and whose `signatures[]`
-includes a valid signature per wallet. The two presentations together establish
-both **structure** (the roster) and **control** (the signatures).
+includes a valid signature per wallet (per the schemes above). The two
+presentations together establish both **structure** (the roster) and
+**control** (the signatures).
 
 A receiver that accepts both MAY include a `verifiedClaims[]` entry of type
 `sayso.identity.agent-roster` with subject `{ identityHandle }` in its
