@@ -10,6 +10,7 @@ import type {
   SourceManifestResponsePayload,
   SourceRuntimeArtifact,
 } from "../sayso/types.js";
+import { PONG_RUNTIME_BYTECODE_METADATA } from "./runtimeBytecode.js";
 
 export const PONG_SOURCE_DEFAULT_CHUNK_SIZE_BYTES = 64 * 1024;
 export const PONG_SOURCE_SNAPSHOT_TTL_MS = 30 * 60 * 1000;
@@ -171,14 +172,7 @@ const createRuntimeArtifacts = (files: Map<string, PongSourceFile>): SourceRunti
       },
       sourcePath: PONG_RUNTIME_SOURCE_PATH,
       bytecodePath: PONG_RUNTIME_BYTECODE_PATH,
-      bytecode: {
-        engine: "quickjs",
-        engineVersion: "2025-09-13",
-        format: "quickjs-binary-json-bytecode",
-        formatVersion: "5",
-        evalType: "global",
-        mediaType: "application/vnd.sayso.quickjs-bytecode",
-      },
+      bytecode: PONG_RUNTIME_BYTECODE_METADATA,
     },
   ];
 };

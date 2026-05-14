@@ -38,9 +38,12 @@ public final class QuickJSRuntimeInstance: @unchecked Sendable {
     private var context: OpaquePointer?
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
+    private let logSink: RuntimeLogSink?
     public private(set) var state: SaySoRuntimeState = .stopped
 
-    public init() {}
+    public init(logSink: RuntimeLogSink? = nil) {
+        self.logSink = logSink
+    }
 
     public static var quickJSVersion: String {
         String(cString: sayso_qjs_quickjs_version())
@@ -51,16 +54,41 @@ public final class QuickJSRuntimeInstance: @unchecked Sendable {
     }
 
     public static func supportsBytecodeArtifact(_ artifact: SourceRuntimeArtifact) -> Bool {
-        artifact.kind == "runtime-bytecode" &&
-            artifact.language.id == "javascript" &&
-            artifact.language.version == "ES2023" &&
-            artifact.language.profile == "sayso-runtime-single-script" &&
-            artifact.bytecode.engine == "quickjs" &&
-            artifact.bytecode.engineVersion == quickJSVersion &&
-            artifact.bytecode.format == "quickjs-binary-json-bytecode" &&
-            artifact.bytecode.formatVersion == bytecodeFormatVersion &&
-            artifact.bytecode.evalType == "global" &&
-            artifact.bytecode.mediaType == "application/vnd.sayso.quickjs-bytecode"
+        bytecodeCompatibilityMismatchReason(artifact) == nil
+    }
+
+    static func bytecodeCompatibilityMismatchReason(_ artifact: SourceRuntimeArtifact) -> String? {
+        if artifact.kind != "runtime-bytecode" {
+            return "kind mismatch: artifact=\(artifact.kind), host=runtime-bytecode"
+        }
+        if artifact.language.id != "javascript" {
+            return "language.id mismatch: artifact=\(artifact.language.id), host=javascript"
+        }
+        if artifact.language.version != "ES2023" {
+            return "language.version mismatch: artifact=\(artifact.language.version), host=ES2023"
+        }
+        if artifact.language.profile != "sayso-runtime-single-script" {
+            return "language.profile mismatch: artifact=\(artifact.language.profile), host=sayso-runtime-single-script"
+        }
+        if artifact.bytecode.engine != "quickjs" {
+            return "engine mismatch: artifact=\(artifact.bytecode.engine), host=quickjs"
+        }
+        if artifact.bytecode.engineVersion != quickJSVersion {
+            return "engineVersion mismatch: artifact=\(artifact.bytecode.engineVersion), host=\(quickJSVersion)"
+        }
+        if artifact.bytecode.format != "quickjs-binary-json-bytecode" {
+            return "format mismatch: artifact=\(artifact.bytecode.format), host=quickjs-binary-json-bytecode"
+        }
+        if artifact.bytecode.formatVersion != bytecodeFormatVersion {
+            return "formatVersion mismatch: artifact=\(artifact.bytecode.formatVersion), host=\(bytecodeFormatVersion)"
+        }
+        if artifact.bytecode.evalType != "global" {
+            return "evalType mismatch: artifact=\(artifact.bytecode.evalType), host=global"
+        }
+        if artifact.bytecode.mediaType != "application/vnd.sayso.quickjs-bytecode" {
+            return "mediaType mismatch: artifact=\(artifact.bytecode.mediaType), host=application/vnd.sayso.quickjs-bytecode"
+        }
+        return nil
     }
 
     public static func compileBytecode(source: String) throws -> Data {
@@ -77,6 +105,13 @@ public final class QuickJSRuntimeInstance: @unchecked Sendable {
 
     deinit {
         stop()
+    }
+
+    private func appendRuntimeLog(_ line: String) {
+        guard let logSink else { return }
+        Task {
+            await logSink.appendRuntimeLog(line)
+        }
     }
 
     public func start(source: String, params: JSONValue = .object([:])) throws -> RuntimeApplicationMetadata {
@@ -123,9 +158,11 @@ public final class QuickJSRuntimeInstance: @unchecked Sendable {
     }
 
     public func start(bytecode: Data, artifact: SourceRuntimeArtifact, sourceFallback: String, params: JSONValue = .object([:])) throws -> RuntimeApplicationMetadata {
-        guard Self.supportsBytecodeArtifact(artifact) else {
+        if let mismatchReason = Self.bytecodeCompatibilityMismatchReason(artifact) {
+            appendRuntimeLog("QuickJS bytecode skipped for \(artifact.bytecodePath): \(mismatchReason); using source fallback.")
             return try start(source: sourceFallback, params: params)
         }
+        appendRuntimeLog("QuickJS bytecode selected for \(artifact.bytecodePath).")
         stop()
         guard let context = sayso_qjs_create() else {
             throw SaySoRuntimeError.loadFailed("Unable to create QuickJS context.")
@@ -148,6 +185,7 @@ public final class QuickJSRuntimeInstance: @unchecked Sendable {
         guard loaded == 1 else {
             sayso_qjs_destroy(context)
             let message = String(cString: errorBuffer)
+            appendRuntimeLog("QuickJS bytecode load failed for \(artifact.bytecodePath): \(message)")
             state = .crashed(message)
             throw SaySoRuntimeError.loadFailed(message)
         }
@@ -160,6 +198,7 @@ public final class QuickJSRuntimeInstance: @unchecked Sendable {
             }
             self.context = context
             state = .running(metadata)
+            appendRuntimeLog("QuickJS bytecode loaded for \(artifact.bytecodePath).")
             return metadata
         } catch {
             sayso_qjs_destroy(context)
@@ -198,20 +237,22 @@ public final class RuntimeSupervisor: ObservableObject {
     @Published public private(set) var states: [String: SaySoRuntimeState] = [:]
     private var runtimes: [String: QuickJSRuntimeInstance] = [:]
     private let store: InstalledAppStore
+    private let logSink: RuntimeLogSink?
 
-    public init(store: InstalledAppStore) {
+    public init(store: InstalledAppStore, logSink: RuntimeLogSink? = nil) {
         self.store = store
+        self.logSink = logSink
     }
 
     @discardableResult
     public func start(_ manifest: InstalledSaySoAppManifest) throws -> RuntimeApplicationMetadata {
         let source = try store.entrypointSource(for: manifest)
-        let bytecodeArtifact = try store.bytecodeArtifacts(for: manifest)
-            .first { candidate in
-                candidate.artifact.sourcePath == manifest.entrypoint &&
-                    QuickJSRuntimeInstance.supportsBytecodeArtifact(candidate.artifact)
-            }
-        let runtime = QuickJSRuntimeInstance()
+        let entrypointBytecodeArtifacts = try store.bytecodeArtifacts(for: manifest)
+            .filter { candidate in candidate.artifact.sourcePath == manifest.entrypoint }
+        let bytecodeArtifact = entrypointBytecodeArtifacts.first { candidate in
+            QuickJSRuntimeInstance.supportsBytecodeArtifact(candidate.artifact)
+        } ?? entrypointBytecodeArtifacts.first
+        let runtime = QuickJSRuntimeInstance(logSink: logSink)
         do {
             let metadata: RuntimeApplicationMetadata
             if let bytecodeArtifact {

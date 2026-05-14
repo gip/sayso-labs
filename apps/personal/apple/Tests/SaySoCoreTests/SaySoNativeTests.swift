@@ -129,8 +129,9 @@ final class SaySoNativeTests: XCTestCase {
         XCTAssertEqual(runtime.state, .stopped)
     }
 
-    func testQuickJSRuntimeLoadsBytecode() throws {
-        let runtime = QuickJSRuntimeInstance()
+    func testQuickJSRuntimeLoadsBytecode() async throws {
+        let logSink = TestRuntimeLogSink()
+        let runtime = QuickJSRuntimeInstance(logSink: logSink)
         let source = """
         sayso.registerApplication({
           appId: "sayso.demo.bytecode",
@@ -150,10 +151,13 @@ final class SaySoNativeTests: XCTestCase {
         let output = try runtime.call("echo", input: .object(["requestId": .string("bytecode_1")]))
         XCTAssertEqual(output["input"]?["requestId"]?.stringValue, "bytecode_1")
         XCTAssertEqual(output["params"]?["publicValue"]?.stringValue, "visible")
+        let loadedLogFound = await logSink.waitForLine(containing: "QuickJS bytecode loaded for runtime-app.qjsc.")
+        XCTAssertTrue(loadedLogFound)
     }
 
-    func testQuickJSRuntimeFallsBackWhenBytecodeMetadataMismatches() throws {
-        let runtime = QuickJSRuntimeInstance()
+    func testQuickJSRuntimeFallsBackWhenBytecodeMetadataMismatches() async throws {
+        let logSink = TestRuntimeLogSink()
+        let runtime = QuickJSRuntimeInstance(logSink: logSink)
         let bytecodeSource = """
         sayso.registerApplication({
           appId: "sayso.demo.bytecode",
@@ -174,10 +178,15 @@ final class SaySoNativeTests: XCTestCase {
         let bytecode = try QuickJSRuntimeInstance.compileBytecode(source: bytecodeSource)
         let metadata = try runtime.start(bytecode: bytecode, artifact: artifact, sourceFallback: fallbackSource)
         XCTAssertEqual(metadata.appId, "sayso.demo.source")
+        let mismatchLogFound = await logSink.waitForLine(containing: "engineVersion mismatch: artifact=0.0.0")
+        let fallbackLogFound = await logSink.waitForLine(containing: "using source fallback")
+        XCTAssertTrue(mismatchLogFound)
+        XCTAssertTrue(fallbackLogFound)
     }
 
-    func testQuickJSRuntimeRejectsBadBytecode() throws {
-        let runtime = QuickJSRuntimeInstance()
+    func testQuickJSRuntimeRejectsBadBytecode() async throws {
+        let logSink = TestRuntimeLogSink()
+        let runtime = QuickJSRuntimeInstance(logSink: logSink)
         let source = """
         sayso.registerApplication({
           appId: "sayso.demo.source",
@@ -188,6 +197,8 @@ final class SaySoNativeTests: XCTestCase {
         XCTAssertThrowsError(
             try runtime.start(bytecode: Data("not quickjs bytecode".utf8), artifact: artifact, sourceFallback: source)
         )
+        let failureLogFound = await logSink.waitForLine(containing: "QuickJS bytecode load failed for runtime-app.qjsc:")
+        XCTAssertTrue(failureLogFound)
     }
 
     func testQuickJSRuntimeRejectsMissingRegistration() {
@@ -305,6 +316,24 @@ private struct FakeSourceTransport: SaySoSourceTransport {
             bytesBase64: data.base64EncodedString(),
             error: nil
         )
+    }
+}
+
+private actor TestRuntimeLogSink: RuntimeLogSink {
+    private var lines: [String] = []
+
+    func appendRuntimeLog(_ line: String) async {
+        lines.append(line)
+    }
+
+    func waitForLine(containing value: String) async -> Bool {
+        for _ in 0..<50 {
+            if lines.contains(where: { $0.contains(value) }) {
+                return true
+            }
+            try? await Task.sleep(nanoseconds: 20_000_000)
+        }
+        return false
     }
 }
 

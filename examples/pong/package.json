@@ -10,6 +10,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/copy-runtime-app.mjs",
+    "runtime:bytecode:write": "node ../../scripts/runtime-bytecode.mjs write --package examples/pong",
+    "runtime:bytecode:check": "node ../../scripts/runtime-bytecode.mjs check --package examples/pong",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "tsx src/test/run.ts",
     "validate:examples": "tsx src/test/validate-examples.ts",
