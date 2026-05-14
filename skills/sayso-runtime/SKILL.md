@@ -129,6 +129,13 @@ Rules:
   hashes before loading the entrypoint.
 - Hosts MUST reject installation when `source.entrypoint` is absent from the
   verified source snapshot.
+- Compiled runtime artifacts, such as QuickJS bytecode, are discovered through
+  `sayso.source` manifest `runtimeArtifacts` entries. Source remains required
+  as the fallback and audit artifact.
+- Hosts that load QuickJS bytecode MUST verify the bytecode file hashes and
+  check artifact `language`, `bytecode.engine`, `bytecode.engineVersion`,
+  `bytecode.format`, `bytecode.formatVersion`, `bytecode.evalType`, and
+  `bytecode.mediaType` before evaluating the bytecode.
 
 ## Self-Contained JavaScript Application Profile
 
@@ -304,6 +311,19 @@ promises, but v0.1.0 does not require Asyncify.
 Browser hosts can use a browser QuickJS package while preserving the same
 `sayso.registerApplication` and `sayso.call` ABI. iOS and Android hosts can provide
 native QuickJS embeddings with the same JSON boundary and host operation set.
+
+QuickJS bytecode artifacts use `bytecode.format =
+"quickjs-binary-json-bytecode"` and `bytecode.mediaType =
+"application/vnd.sayso.quickjs-bytecode"`. The format is tied to the producing
+QuickJS engine version and binary JSON bytecode format version; it is not a
+portable JavaScript language representation.
+
+Bytecode generators for this profile compile the exact source snapshot with
+`JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_COMPILE_ONLY` and serialize the compiled
+function with `JS_WriteObject(..., JS_WRITE_OBJ_BYTECODE)`. Generators must
+publish the resulting `engineVersion`, `formatVersion`, `format`, `evalType`,
+and `mediaType` in `sayso.source.runtimeArtifacts`; hosts must not infer
+compatibility from file extensions.
 
 ## Schemata
 

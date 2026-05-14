@@ -7,6 +7,7 @@ export const PONG_SKILL_VERSION = "0.1.0";
 export const SAYSO_RUNTIME_SKILL_ID = "sayso.runtime";
 export const SAYSO_RUNTIME_VERSION = "0.1.0";
 export const PONG_RUNTIME_ENTRYPOINT = "examples/pong/src/pong/runtime-app.js";
+export const PONG_RUNTIME_BYTECODE = "examples/pong/src/pong/runtime-app.qjsc";
 
 const SAYSO_RUNTIME_HOST_OPERATIONS = [
   "params.get",
@@ -39,7 +40,7 @@ const PONG_RUNTIME_METADATA = {
         skillId: "sayso.source",
         format: "files",
         entrypoint: PONG_RUNTIME_ENTRYPOINT,
-        include: [PONG_RUNTIME_ENTRYPOINT],
+        include: [PONG_RUNTIME_ENTRYPOINT, PONG_RUNTIME_BYTECODE],
       },
       network: {
         https: [],

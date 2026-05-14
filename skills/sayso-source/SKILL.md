@@ -76,6 +76,26 @@ type SourceArchiveEntry = {
   mediaType: string;
 };
 
+type SourceRuntimeArtifact = {
+  artifactId: string;
+  kind: "runtime-bytecode";
+  language: {
+    id: "javascript";
+    version: "ES2023";
+    profile: "sayso-runtime-single-script";
+  };
+  sourcePath: string;
+  bytecodePath: string;
+  bytecode: {
+    engine: "quickjs";
+    engineVersion: string;
+    format: "quickjs-binary-json-bytecode";
+    formatVersion: string;
+    evalType: "global";
+    mediaType: "application/vnd.sayso.quickjs-bytecode";
+  };
+};
+
 type SourceManifestResponsePayload =
   | {
       requestId: string;
@@ -86,6 +106,7 @@ type SourceManifestResponsePayload =
       chunkSizeBytes: number;
       files: SourceFileEntry[];
       archives?: SourceArchiveEntry[];
+      runtimeArtifacts?: SourceRuntimeArtifact[];
     }
   | {
       requestId: string;
@@ -152,6 +173,12 @@ Rules:
 - `sha256` in `source-chunk-response/1` is the hash of the returned chunk bytes.
 - Callers must verify chunk hashes and final file or archive hashes before
   using retrieved source.
+- `runtimeArtifacts`, when present, declares runtime-ready artifacts that travel
+  with the source snapshot. `sourcePath` and `bytecodePath` must both reference
+  entries in `files`.
+- QuickJS bytecode artifacts use `bytecode.format =
+  "quickjs-binary-json-bytecode"`. Hosts must check `engineVersion`,
+  `formatVersion`, `evalType`, and `mediaType` before loading bytecode.
 - `sayso.source` exposes code and static source assets. Runtime configuration
   values are discovered through `sayso.configure`.
 
@@ -271,6 +298,87 @@ The following JSON Schema blocks are part of this skill document. They are the e
         "mediaType": {
           "type": "string",
           "minLength": 1
+        }
+      }
+    },
+    "sourceRuntimeArtifact": {
+      "type": "object",
+      "required": [
+        "artifactId",
+        "kind",
+        "language",
+        "sourcePath",
+        "bytecodePath",
+        "bytecode"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "artifactId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "runtime-bytecode"
+        },
+        "language": {
+          "type": "object",
+          "required": [
+            "id",
+            "version",
+            "profile"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "const": "javascript"
+            },
+            "version": {
+              "const": "ES2023"
+            },
+            "profile": {
+              "const": "sayso-runtime-single-script"
+            }
+          }
+        },
+        "sourcePath": {
+          "$ref": "sayso://sayso.source/common#/$defs/relativePath"
+        },
+        "bytecodePath": {
+          "$ref": "sayso://sayso.source/common#/$defs/relativePath"
+        },
+        "bytecode": {
+          "type": "object",
+          "required": [
+            "engine",
+            "engineVersion",
+            "format",
+            "formatVersion",
+            "evalType",
+            "mediaType"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "engine": {
+              "const": "quickjs"
+            },
+            "engineVersion": {
+              "type": "string",
+              "minLength": 1
+            },
+            "format": {
+              "const": "quickjs-binary-json-bytecode"
+            },
+            "formatVersion": {
+              "type": "string",
+              "minLength": 1
+            },
+            "evalType": {
+              "const": "global"
+            },
+            "mediaType": {
+              "const": "application/vnd.sayso.quickjs-bytecode"
+            }
+          }
         }
       }
     },
@@ -570,6 +678,13 @@ The following JSON Schema blocks are part of this skill document. They are the e
           "items": {
             "$ref": "sayso://sayso.source/common#/$defs/sourceArchiveEntry"
           }
+        },
+        "runtimeArtifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "sayso://sayso.source/common#/$defs/sourceRuntimeArtifact"
+          },
+          "uniqueItems": true
         }
       }
     },

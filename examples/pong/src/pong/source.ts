@@ -8,10 +8,13 @@ import type {
   SourceFileEntry,
   SourceManifestRequestPayload,
   SourceManifestResponsePayload,
+  SourceRuntimeArtifact,
 } from "../sayso/types.js";
 
 export const PONG_SOURCE_DEFAULT_CHUNK_SIZE_BYTES = 64 * 1024;
 export const PONG_SOURCE_SNAPSHOT_TTL_MS = 30 * 60 * 1000;
+export const PONG_RUNTIME_SOURCE_PATH = "examples/pong/src/pong/runtime-app.js";
+export const PONG_RUNTIME_BYTECODE_PATH = "examples/pong/src/pong/runtime-app.qjsc";
 
 export const PONG_SOURCE_PATHS = [
   "examples/pong/package.json",
@@ -24,7 +27,8 @@ export const PONG_SOURCE_PATHS = [
   "examples/pong/src/pong/handler.ts",
   "examples/pong/src/pong/networkRegistration.ts",
   "examples/pong/src/pong/quickjs.ts",
-  "examples/pong/src/pong/runtime-app.js",
+  PONG_RUNTIME_SOURCE_PATH,
+  PONG_RUNTIME_BYTECODE_PATH,
   "examples/pong/src/pong/source.ts",
   "examples/pong/src/pong/skill.ts",
   "examples/pong/src/pong/types.ts",
@@ -80,6 +84,7 @@ const sha256 = (bytes: Buffer | Uint8Array) =>
   createHash("sha256").update(bytes).digest("hex");
 
 const mediaTypeFor = (relativePath: string) => {
+  if (relativePath.endsWith(".qjsc")) return "application/vnd.sayso.quickjs-bytecode";
   if (relativePath.endsWith(".js") || relativePath.endsWith(".mjs")) return "text/javascript";
   if (relativePath.endsWith(".ts")) return "text/typescript";
   if (relativePath.endsWith(".json")) return "application/json";
@@ -153,6 +158,31 @@ const buildSourceFile = (repoRoot: string, relativePath: string, chunkSizeBytes:
   return { entry, bytes };
 };
 
+const createRuntimeArtifacts = (files: Map<string, PongSourceFile>): SourceRuntimeArtifact[] => {
+  if (!files.has(PONG_RUNTIME_SOURCE_PATH) || !files.has(PONG_RUNTIME_BYTECODE_PATH)) return [];
+  return [
+    {
+      artifactId: "sayso-demo-pong-quickjs-bytecode",
+      kind: "runtime-bytecode",
+      language: {
+        id: "javascript",
+        version: "ES2023",
+        profile: "sayso-runtime-single-script",
+      },
+      sourcePath: PONG_RUNTIME_SOURCE_PATH,
+      bytecodePath: PONG_RUNTIME_BYTECODE_PATH,
+      bytecode: {
+        engine: "quickjs",
+        engineVersion: "2025-09-13",
+        format: "quickjs-binary-json-bytecode",
+        formatVersion: "5",
+        evalType: "global",
+        mediaType: "application/vnd.sayso.quickjs-bytecode",
+      },
+    },
+  ];
+};
+
 const pruneExpiredSnapshots = (snapshots: PongSourceSnapshotStore, nowMs: number) => {
   for (const [snapshotId, snapshot] of snapshots) {
     if (snapshot.expiresAtMs < nowMs) snapshots.delete(snapshotId);
@@ -189,6 +219,7 @@ export const createPongSourceManifestResponse = (
   }
 
   const snapshotId = options.snapshotId ?? `pong_${nowMs}_${randomUUID()}`;
+  const runtimeArtifacts = createRuntimeArtifacts(files);
   const snapshot: PongSourceSnapshot = {
     snapshotId,
     createdAtMs: nowMs,
@@ -206,6 +237,7 @@ export const createPongSourceManifestResponse = (
     expiresAt: new Date(snapshot.expiresAtMs).toISOString(),
     chunkSizeBytes,
     files: [...files.values()].map((file) => file.entry),
+    ...(runtimeArtifacts.length ? { runtimeArtifacts } : {}),
   };
 };
 

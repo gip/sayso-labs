@@ -42,6 +42,39 @@ public final class QuickJSRuntimeInstance: @unchecked Sendable {
 
     public init() {}
 
+    public static var quickJSVersion: String {
+        String(cString: sayso_qjs_quickjs_version())
+    }
+
+    public static var bytecodeFormatVersion: String {
+        String(cString: sayso_qjs_bytecode_format_version())
+    }
+
+    public static func supportsBytecodeArtifact(_ artifact: SourceRuntimeArtifact) -> Bool {
+        artifact.kind == "runtime-bytecode" &&
+            artifact.language.id == "javascript" &&
+            artifact.language.version == "ES2023" &&
+            artifact.language.profile == "sayso-runtime-single-script" &&
+            artifact.bytecode.engine == "quickjs" &&
+            artifact.bytecode.engineVersion == quickJSVersion &&
+            artifact.bytecode.format == "quickjs-binary-json-bytecode" &&
+            artifact.bytecode.formatVersion == bytecodeFormatVersion &&
+            artifact.bytecode.evalType == "global" &&
+            artifact.bytecode.mediaType == "application/vnd.sayso.quickjs-bytecode"
+    }
+
+    public static func compileBytecode(source: String) throws -> Data {
+        var errorBuffer = [CChar](repeating: 0, count: 512)
+        var bytecodeLength = 0
+        guard let bytecodePointer = source.withCString({ sourcePointer in
+            sayso_qjs_compile_bytecode(sourcePointer, &bytecodeLength, &errorBuffer, Int32(errorBuffer.count))
+        }) else {
+            throw SaySoRuntimeError.loadFailed(String(cString: errorBuffer))
+        }
+        defer { sayso_qjs_free_bytes(bytecodePointer) }
+        return Data(bytes: bytecodePointer, count: bytecodeLength)
+    }
+
     deinit {
         stop()
     }
@@ -77,6 +110,53 @@ public final class QuickJSRuntimeInstance: @unchecked Sendable {
                 metadata = try RuntimeMetadataExtractor.application(fromRegisteredJSON: String(cString: jsonPointer))
             } else {
                 metadata = try RuntimeMetadataExtractor.application(from: source)
+            }
+            self.context = context
+            state = .running(metadata)
+            return metadata
+        } catch {
+            sayso_qjs_destroy(context)
+            let message = error.localizedDescription
+            state = .crashed(message)
+            throw error
+        }
+    }
+
+    public func start(bytecode: Data, artifact: SourceRuntimeArtifact, sourceFallback: String, params: JSONValue = .object([:])) throws -> RuntimeApplicationMetadata {
+        guard Self.supportsBytecodeArtifact(artifact) else {
+            return try start(source: sourceFallback, params: params)
+        }
+        stop()
+        guard let context = sayso_qjs_create() else {
+            throw SaySoRuntimeError.loadFailed("Unable to create QuickJS context.")
+        }
+        var errorBuffer = [CChar](repeating: 0, count: 512)
+        let paramsJSON = try String(data: encoder.encode(params), encoding: .utf8) ?? "{}"
+        let paramsSet = paramsJSON.withCString { paramsPointer in
+            sayso_qjs_set_params_json(context, paramsPointer, &errorBuffer, Int32(errorBuffer.count))
+        }
+        guard paramsSet == 1 else {
+            sayso_qjs_destroy(context)
+            let message = String(cString: errorBuffer)
+            state = .crashed(message)
+            throw SaySoRuntimeError.loadFailed(message)
+        }
+        let loaded = bytecode.withUnsafeBytes { rawBuffer -> Int32 in
+            guard let pointer = rawBuffer.bindMemory(to: UInt8.self).baseAddress else { return 0 }
+            return sayso_qjs_load_bytecode(context, pointer, rawBuffer.count, &errorBuffer, Int32(errorBuffer.count))
+        }
+        guard loaded == 1 else {
+            sayso_qjs_destroy(context)
+            let message = String(cString: errorBuffer)
+            state = .crashed(message)
+            throw SaySoRuntimeError.loadFailed(message)
+        }
+        do {
+            let metadata: RuntimeApplicationMetadata
+            if let jsonPointer = sayso_qjs_registered_application_json(context) {
+                metadata = try RuntimeMetadataExtractor.application(fromRegisteredJSON: String(cString: jsonPointer))
+            } else {
+                metadata = try RuntimeMetadataExtractor.application(from: sourceFallback)
             }
             self.context = context
             state = .running(metadata)
@@ -126,9 +206,23 @@ public final class RuntimeSupervisor: ObservableObject {
     @discardableResult
     public func start(_ manifest: InstalledSaySoAppManifest) throws -> RuntimeApplicationMetadata {
         let source = try store.entrypointSource(for: manifest)
+        let bytecodeArtifact = try store.bytecodeArtifacts(for: manifest)
+            .first { candidate in
+                candidate.artifact.sourcePath == manifest.entrypoint &&
+                    QuickJSRuntimeInstance.supportsBytecodeArtifact(candidate.artifact)
+            }
         let runtime = QuickJSRuntimeInstance()
         do {
-            let metadata = try runtime.start(source: source)
+            let metadata: RuntimeApplicationMetadata
+            if let bytecodeArtifact {
+                metadata = try runtime.start(
+                    bytecode: bytecodeArtifact.data,
+                    artifact: bytecodeArtifact.artifact,
+                    sourceFallback: source
+                )
+            } else {
+                metadata = try runtime.start(source: source)
+            }
             runtimes[manifest.id] = runtime
             states[manifest.id] = .running(metadata)
             var updated = manifest

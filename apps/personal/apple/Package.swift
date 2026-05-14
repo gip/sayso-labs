@@ -12,6 +12,7 @@ let package = Package(
         .library(name: "SaySoCore", targets: ["SaySoCore"]),
         .library(name: "SaySoRuntime", targets: ["SaySoRuntime"]),
         .library(name: "SaySoUI", targets: ["SaySoUI"]),
+        .executable(name: "sayso-qjs-bytecode", targets: ["SaySoQuickJSBytecodeTool"]),
     ],
     targets: [
         .target(
@@ -32,6 +33,10 @@ let package = Package(
         .target(
             name: "SaySoUI",
             dependencies: ["SaySoCore", "SaySoRuntime"]
+        ),
+        .executableTarget(
+            name: "SaySoQuickJSBytecodeTool",
+            dependencies: ["CQuickJS"]
         ),
         .testTarget(
             name: "SaySoCoreTests",
