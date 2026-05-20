@@ -552,7 +552,8 @@ const quickJsHost = await createQuickJsApplication(
       "signer.getAccount",
       "signer.signMessage",
       "local.text.write",
-      "local.text.read"
+      "local.text.read",
+      "test.hostObject"
     ],
     capabilities: {
       network: {
@@ -631,6 +632,7 @@ assert.deepEqual(quickJsHost.application.hostOperations, [
   "signer.signMessage",
   "local.text.write",
   "local.text.read",
+  "test.hostObject",
 ]);
 assert.deepEqual(await quickJsHost.call("echo", { requestId: "host_1" }), {
   input: { requestId: "host_1" },
