@@ -13,6 +13,35 @@
       "sha256": "57ea3db3367d8ae13832f1b2998b430ebb5c305fa7136f642a094d2f22d20a9f",
       "chunks": 1,
       "mediaType": "text/typescript"
+    },
+    {
+      "path": "src/agent.qjsc",
+      "kind": "file",
+      "sizeBytes": 57,
+      "sha256": "8fea106c1aa2c3c0a9791e10fd7e1c40b03907a54ee972beef65cb19bbb7fba6",
+      "chunks": 1,
+      "mediaType": "application/vnd.sayso.quickjs-bytecode"
+    }
+  ],
+  "runtimeArtifacts": [
+    {
+      "artifactId": "agent-quickjs-bytecode",
+      "kind": "runtime-bytecode",
+      "language": {
+        "id": "javascript",
+        "version": "ES2023",
+        "profile": "sayso-runtime-single-script"
+      },
+      "sourcePath": "src/agent.ts",
+      "bytecodePath": "src/agent.qjsc",
+      "bytecode": {
+        "engine": "quickjs",
+        "engineVersion": "2025-09-13",
+        "format": "quickjs-binary-json-bytecode",
+        "formatVersion": "5",
+        "evalType": "global",
+        "mediaType": "application/vnd.sayso.quickjs-bytecode"
+      }
     }
   ],
   "archives": [

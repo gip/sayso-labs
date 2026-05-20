@@ -8,13 +8,14 @@ description: Optional SaySo skill for portable runtime applications with host-ow
 Version: **0.1.0**.
 
 This optional skill defines a portable application runtime boundary for SaySo
-agents. It lets an agent keep business logic inside a runtime such as QuickJS
+agents. It lets an agent keep business logic inside an isolated runtime program
 while the host owns I/O, policy, wallet custody, XMTP transport, connection
 state, and network sockets.
 
-`sayso.runtime` is an ABI contract, not a QuickJS requirement. QuickJS is the
-first reference embedding, but web, iOS, Android, Node, or other hosts can
-implement the same boundary.
+`sayso.runtime` is an ABI contract, not a QuickJS requirement. The reusable
+QuickJS source and bytecode VM strategy is defined independently in the
+top-level `sayso-vm/` package so other projects can use the same VM profile
+without adopting SaySo protocol skills.
 
 This skill imports:
 
@@ -129,6 +130,13 @@ Rules:
   hashes before loading the entrypoint.
 - Hosts MUST reject installation when `source.entrypoint` is absent from the
   verified source snapshot.
+- Compiled VM artifacts, such as SaySo VM QuickJS bytecode, are discovered
+  through `sayso.source` manifest `runtimeArtifacts` entries. Source remains
+  required as the fallback and audit artifact.
+- Hosts that load SaySo VM QuickJS bytecode MUST verify the bytecode file
+  hashes and check artifact `language`, `bytecode.engine`,
+  `bytecode.engineVersion`, `bytecode.format`, `bytecode.formatVersion`,
+  `bytecode.evalType`, and `bytecode.mediaType` before evaluating bytecode.
 
 ## Self-Contained JavaScript Application Profile
 
@@ -295,15 +303,26 @@ Network rules:
 - If declaration or policy approval fails, the operation MUST fail before host
   I/O occurs.
 
-## QuickJS Reference Profile
+## SaySo VM QuickJS Profile
 
-The reference QuickJS profile uses one QuickJS VM per application process and a
-synchronous QuickJS WebAssembly variant. Application code may use normal
-promises, but v0.1.0 does not require Asyncify.
+QuickJS source packaging, QuickJS bytecode metadata, VM-level `io` modes,
+`argv`, `stdio`, `https`, and `wss` capabilities, configuration and variable
+injection, origin allow-list rules, and functional VM examples are defined in
+`sayso-vm/SPEC.md`.
 
-Browser hosts can use a browser QuickJS package while preserving the same
-`sayso.registerApplication` and `sayso.call` ABI. iOS and Android hosts can provide
-native QuickJS embeddings with the same JSON boundary and host operation set.
+SaySo runtimes that use this profile SHOULD wrap the self-contained JavaScript
+application source in a SaySo VM program envelope. Existing
+`sayso.source.runtimeArtifacts` QuickJS fields correspond to the SaySo VM
+QuickJS bytecode metadata profile. Hosts MUST verify file hashes and bytecode
+metadata before loading bytecode and MUST use source fallback or reject the
+program when compatibility cannot be proven.
+
+The SaySo VM profile supports two IO modes. When `io` is omitted or
+`{ "mode": "stdio" }`, the runtime follows the current argv/stdio profile.
+When `io.mode` is `"jsonio"`, the envelope supplies `inputSchema` and
+`outputSchema` JSON Schemas, direct callback inputs and outputs are validated
+against those schemas, `params.get` exposes the `io` contract, and argv/stdio
+capabilities and operations are not available.
 
 ## Schemata
 

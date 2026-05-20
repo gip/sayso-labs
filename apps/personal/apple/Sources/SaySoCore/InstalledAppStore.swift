@@ -16,6 +16,7 @@ public struct InstalledSaySoAppManifest: Codable, Equatable, Identifiable, Senda
     public var state: InstalledSaySoAppState
     public var lastError: String?
     public let files: [SourceFileEntry]
+    public let runtimeArtifacts: [SourceRuntimeArtifact]?
 }
 
 public enum InstalledAppStoreError: Error, LocalizedError, Equatable {
@@ -81,7 +82,8 @@ public struct InstalledAppStore: Sendable {
             installedAt: Date(),
             state: .stopped,
             lastError: nil,
-            files: snapshot.entries
+            files: snapshot.entries,
+            runtimeArtifacts: snapshot.runtimeArtifacts
         )
         try write(manifest)
         try encoder.encode(record.skillPacket).write(to: appRoot.appendingPathComponent("skillPacket.json"), options: .atomic)
@@ -122,6 +124,22 @@ public struct InstalledAppStore: Sendable {
                 .appendingPathComponent("Source", isDirectory: true)
         )
         return try String(contentsOf: url, encoding: .utf8)
+    }
+
+    public func bytecodeArtifacts(for manifest: InstalledSaySoAppManifest) throws -> [(artifact: SourceRuntimeArtifact, data: Data)] {
+        let artifacts = manifest.runtimeArtifacts ?? []
+        return try artifacts.map { artifact in
+            guard SaySoAppInstallabilityChecker.isSafeRelativePath(artifact.bytecodePath) else {
+                throw InstalledAppStoreError.unsafePath(artifact.bytecodePath)
+            }
+            let url = append(
+                relativePath: artifact.bytecodePath,
+                to: rootURL
+                    .appendingPathComponent(manifest.id, isDirectory: true)
+                    .appendingPathComponent("Source", isDirectory: true)
+            )
+            return (artifact, try Data(contentsOf: url))
+        }
     }
 
     private func append(relativePath: String, to root: URL) -> URL {

@@ -23,7 +23,15 @@ import {
   PONG_SOURCE_SNAPSHOT_TTL_MS,
   type PongSourceSnapshotStore,
 } from "../pong/source.js";
-import { createPongResolvedSkill, createPongSkillPacket, hasPongSkill, PONG_RUNTIME_ENTRYPOINT, pongSkillDocuments } from "../pong/skill.js";
+import { PONG_RUNTIME_BYTECODE_METADATA } from "../pong/runtimeBytecode.js";
+import {
+  createPongResolvedSkill,
+  createPongSkillPacket,
+  hasPongSkill,
+  PONG_RUNTIME_BYTECODE,
+  PONG_RUNTIME_ENTRYPOINT,
+  pongSkillDocuments,
+} from "../pong/skill.js";
 import { createPongNetworkRegistration, pongAgentId } from "../pong/networkRegistration.js";
 import { createQuickJsApplication, type JsonValue } from "../sayso/quickjs.js";
 import type { ConfigurationResponsePayload, ForkResultPayload, SourceChunkResponsePayload } from "../sayso/types.js";
@@ -410,6 +418,27 @@ if (filteredSourceManifestResponse.status !== "ok") throw new Error("expected fi
 assert.equal(filteredSourceManifestResponse.files.some((file) => file.path === handlerPath), false);
 assert.ok(filteredSourceManifestResponse.files.some((file) => file.path === "apps/cli/src/pong/source.ts"));
 
+const runtimeSourceManifestResponse = createPongSourceManifestResponse(
+  {
+    requestId: "source_manifest_runtime",
+    include: [PONG_RUNTIME_ENTRYPOINT, PONG_RUNTIME_BYTECODE],
+  },
+  sourceSnapshots,
+  {
+    now: new Date("2026-05-05T12:02:30.000Z"),
+    snapshotId: "snapshot_runtime",
+  },
+);
+assert.equal(runtimeSourceManifestResponse.status, "ok");
+if (runtimeSourceManifestResponse.status !== "ok") throw new Error("expected runtime source manifest ok response");
+assert.deepEqual(
+  runtimeSourceManifestResponse.files.map((file) => file.path).sort(),
+  [PONG_RUNTIME_BYTECODE, PONG_RUNTIME_ENTRYPOINT].sort(),
+);
+assert.deepEqual(runtimeSourceManifestResponse.runtimeArtifacts?.[0]?.bytecode, PONG_RUNTIME_BYTECODE_METADATA);
+assert.equal(runtimeSourceManifestResponse.runtimeArtifacts?.[0]?.sourcePath, PONG_RUNTIME_ENTRYPOINT);
+assert.equal(runtimeSourceManifestResponse.runtimeArtifacts?.[0]?.bytecodePath, PONG_RUNTIME_BYTECODE);
+
 const archiveManifestResponse = createPongSourceManifestResponse(
   { requestId: "source_archive_manifest", format: "tar.gz" },
   sourceSnapshots,
@@ -523,7 +552,8 @@ const quickJsHost = await createQuickJsApplication(
       "signer.getAccount",
       "signer.signMessage",
       "local.text.write",
-      "local.text.read"
+      "local.text.read",
+      "test.hostObject"
     ],
     capabilities: {
       network: {
@@ -602,6 +632,7 @@ assert.deepEqual(quickJsHost.application.hostOperations, [
   "signer.signMessage",
   "local.text.write",
   "local.text.read",
+  "test.hostObject",
 ]);
 assert.deepEqual(await quickJsHost.call("echo", { requestId: "host_1" }), {
   input: { requestId: "host_1" },
@@ -697,7 +728,7 @@ assert.deepEqual(standaloneRuntimeApp.application.source, {
   skillId: "sayso.source",
   format: "files",
   entrypoint: PONG_RUNTIME_ENTRYPOINT,
-  include: [PONG_RUNTIME_ENTRYPOINT],
+  include: [PONG_RUNTIME_ENTRYPOINT, PONG_RUNTIME_BYTECODE],
 });
 standaloneRuntimeApp.dispose();
 

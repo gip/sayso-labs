@@ -207,6 +207,7 @@ export type SourceManifestResponsePayloadSchema =
       chunkSizeBytes: number;
       files: SourceSourceFileEntrySchema[];
       archives?: SourceSourceArchiveEntrySchema[];
+      runtimeArtifacts?: SourceSourceRuntimeArtifactSchema[];
     }
   | {
       requestId: string;
@@ -874,6 +875,29 @@ export interface SourceSourceArchiveEntrySchema {
   sha256: SourceSha256Schema;
   chunks: number;
   mediaType: string;
+}
+/**
+ * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema
+ * via the `definition` "sourceSourceRuntimeArtifactSchema".
+ */
+export interface SourceSourceRuntimeArtifactSchema {
+  artifactId: string;
+  kind: "runtime-bytecode";
+  language: {
+    id: "javascript";
+    version: "ES2023";
+    profile: "sayso-runtime-single-script";
+  };
+  sourcePath: SourceRelativePathSchema;
+  bytecodePath: SourceRelativePathSchema;
+  bytecode: {
+    engine: "quickjs";
+    engineVersion: string;
+    format: "quickjs-binary-json-bytecode";
+    formatVersion: string;
+    evalType: "global";
+    mediaType: "application/vnd.sayso.quickjs-bytecode";
+  };
 }
 /**
  * This interface was referenced by `SaySoGeneratedPayloadSchemas`'s JSON-Schema

@@ -38,14 +38,24 @@ final class SaySoNativeTests: XCTestCase {
         });
         """
         let sourceData = Data(source.utf8)
-        let transport = FakeSourceTransport(path: sourcePath, data: sourceData)
+        let bytecodePath = "\(sourcePath).qjsc"
+        let bytecodeData = Data([0xde, 0xad, 0xbe, 0xef])
+        let artifact = quickJSRuntimeArtifact(sourcePath: sourcePath, bytecodePath: bytecodePath)
+        let transport = FakeSourceTransport(
+            path: sourcePath,
+            data: sourceData,
+            extraFiles: [bytecodePath: bytecodeData],
+            runtimeArtifacts: [artifact]
+        )
         let snapshot = try await SourceInstaller(transport: transport, requestId: { "request" }).installSource(for: record, descriptor: descriptor)
         XCTAssertEqual(snapshot.source(at: sourcePath), source)
+        XCTAssertEqual(snapshot.runtimeArtifacts, [artifact])
 
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let store = InstalledAppStore(rootURL: root)
         let manifest = try store.install(record: record, descriptor: descriptor, snapshot: snapshot)
         XCTAssertEqual(try store.entrypointSource(for: manifest), source)
+        XCTAssertEqual(try store.bytecodeArtifacts(for: manifest).first?.data, bytecodeData)
         XCTAssertEqual(try store.manifests().first?.appId, "sayso.demo.pong")
     }
 
@@ -56,6 +66,26 @@ final class SaySoNativeTests: XCTestCase {
             return
         }
         let transport = FakeSourceTransport(path: descriptor.source!.entrypoint, data: Data("ok".utf8), corruptChunkHash: true)
+        await XCTAssertThrowsErrorAsync(
+            try await SourceInstaller(transport: transport, requestId: { "request" }).installSource(for: record, descriptor: descriptor)
+        )
+    }
+
+    func testSourceInstallerRejectsRuntimeArtifactMissingFile() async throws {
+        let record = try sampleRecord()
+        guard case .installable(let descriptor) = SaySoAppInstallabilityChecker.evaluate(record) else {
+            XCTFail("Expected installable record")
+            return
+        }
+        let artifact = quickJSRuntimeArtifact(
+            sourcePath: descriptor.source!.entrypoint,
+            bytecodePath: "\(descriptor.source!.entrypoint).qjsc"
+        )
+        let transport = FakeSourceTransport(
+            path: descriptor.source!.entrypoint,
+            data: Data("ok".utf8),
+            runtimeArtifacts: [artifact]
+        )
         await XCTAssertThrowsErrorAsync(
             try await SourceInstaller(transport: transport, requestId: { "request" }).installSource(for: record, descriptor: descriptor)
         )
@@ -99,6 +129,78 @@ final class SaySoNativeTests: XCTestCase {
         XCTAssertEqual(runtime.state, .stopped)
     }
 
+    func testQuickJSRuntimeLoadsBytecode() async throws {
+        let logSink = TestRuntimeLogSink()
+        let runtime = QuickJSRuntimeInstance(logSink: logSink)
+        let source = """
+        sayso.registerApplication({
+          appId: "sayso.demo.bytecode",
+          runtime: { skillId: "sayso.runtime", abiVersion: "0.1.0" },
+          echo: async (input) => ({ input, params: await sayso.call("params.get", {}) })
+        });
+        """
+        let artifact = quickJSRuntimeArtifact(sourcePath: "runtime-app.js", bytecodePath: "runtime-app.qjsc")
+        let bytecode = try QuickJSRuntimeInstance.compileBytecode(source: source)
+        let metadata = try runtime.start(
+            bytecode: bytecode,
+            artifact: artifact,
+            sourceFallback: source,
+            params: .object(["publicValue": .string("visible")])
+        )
+        XCTAssertEqual(metadata.appId, "sayso.demo.bytecode")
+        let output = try runtime.call("echo", input: .object(["requestId": .string("bytecode_1")]))
+        XCTAssertEqual(output["input"]?["requestId"]?.stringValue, "bytecode_1")
+        XCTAssertEqual(output["params"]?["publicValue"]?.stringValue, "visible")
+        let loadedLogFound = await logSink.waitForLine(containing: "QuickJS bytecode loaded for runtime-app.qjsc.")
+        XCTAssertTrue(loadedLogFound)
+    }
+
+    func testQuickJSRuntimeFallsBackWhenBytecodeMetadataMismatches() async throws {
+        let logSink = TestRuntimeLogSink()
+        let runtime = QuickJSRuntimeInstance(logSink: logSink)
+        let bytecodeSource = """
+        sayso.registerApplication({
+          appId: "sayso.demo.bytecode",
+          runtime: { skillId: "sayso.runtime", abiVersion: "0.1.0" }
+        });
+        """
+        let fallbackSource = """
+        sayso.registerApplication({
+          appId: "sayso.demo.source",
+          runtime: { skillId: "sayso.runtime", abiVersion: "0.1.0" }
+        });
+        """
+        let artifact = quickJSRuntimeArtifact(
+            sourcePath: "runtime-app.js",
+            bytecodePath: "runtime-app.qjsc",
+            engineVersion: "0.0.0"
+        )
+        let bytecode = try QuickJSRuntimeInstance.compileBytecode(source: bytecodeSource)
+        let metadata = try runtime.start(bytecode: bytecode, artifact: artifact, sourceFallback: fallbackSource)
+        XCTAssertEqual(metadata.appId, "sayso.demo.source")
+        let mismatchLogFound = await logSink.waitForLine(containing: "engineVersion mismatch: artifact=0.0.0")
+        let fallbackLogFound = await logSink.waitForLine(containing: "using source fallback")
+        XCTAssertTrue(mismatchLogFound)
+        XCTAssertTrue(fallbackLogFound)
+    }
+
+    func testQuickJSRuntimeRejectsBadBytecode() async throws {
+        let logSink = TestRuntimeLogSink()
+        let runtime = QuickJSRuntimeInstance(logSink: logSink)
+        let source = """
+        sayso.registerApplication({
+          appId: "sayso.demo.source",
+          runtime: { skillId: "sayso.runtime", abiVersion: "0.1.0" }
+        });
+        """
+        let artifact = quickJSRuntimeArtifact(sourcePath: "runtime-app.js", bytecodePath: "runtime-app.qjsc")
+        XCTAssertThrowsError(
+            try runtime.start(bytecode: Data("not quickjs bytecode".utf8), artifact: artifact, sourceFallback: source)
+        )
+        let failureLogFound = await logSink.waitForLine(containing: "QuickJS bytecode load failed for runtime-app.qjsc:")
+        XCTAssertTrue(failureLogFound)
+    }
+
     func testQuickJSRuntimeRejectsMissingRegistration() {
         let runtime = QuickJSRuntimeInstance()
         XCTAssertThrowsError(try runtime.start(source: "const app = {};"))
@@ -127,7 +229,8 @@ final class SaySoNativeTests: XCTestCase {
             files: [sourcePath: Data(source.utf8)],
             entries: [
                 SourceFileEntry(path: sourcePath, kind: "file", sizeBytes: Data(source.utf8).count, sha256: sha256Hex(Data(source.utf8)), chunks: 1, mediaType: "text/javascript", executable: nil),
-            ]
+            ],
+            runtimeArtifacts: []
         )
         let store = InstalledAppStore(rootURL: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
         let manifest = try store.install(record: record, descriptor: descriptor, snapshot: snapshot)
@@ -144,27 +247,65 @@ final class SaySoNativeTests: XCTestCase {
 }
 
 private struct FakeSourceTransport: SaySoSourceTransport {
-    let path: String
-    let data: Data
+    let files: [String: Data]
     var corruptChunkHash = false
+    var runtimeArtifacts: [SourceRuntimeArtifact]?
+
+    init(
+        path: String,
+        data: Data,
+        corruptChunkHash: Bool = false,
+        extraFiles: [String: Data] = [:],
+        runtimeArtifacts: [SourceRuntimeArtifact]? = nil
+    ) {
+        var files = extraFiles
+        files[path] = data
+        self.files = files
+        self.corruptChunkHash = corruptChunkHash
+        self.runtimeArtifacts = runtimeArtifacts
+    }
 
     func requestSourceManifest(_ request: SourceManifestRequestPayload, agent: NetworkAgent) async throws -> SourceManifestResponsePayload {
-        SourceManifestResponsePayload(
+        let entries = files.map { path, data in
+            SourceFileEntry(
+                path: path,
+                kind: "file",
+                sizeBytes: data.count,
+                sha256: sha256Hex(data),
+                chunks: 1,
+                mediaType: path.hasSuffix(".qjsc") ? "application/vnd.sayso.quickjs-bytecode" : "text/javascript",
+                executable: nil
+            )
+        }
+        .sorted { $0.path < $1.path }
+        return SourceManifestResponsePayload(
             requestId: request.requestId,
             status: "ok",
             snapshotId: "snapshot",
             createdAt: "2026-05-07T00:00:00.000Z",
             expiresAt: nil,
-            chunkSizeBytes: data.count,
-            files: [
-                SourceFileEntry(path: path, kind: "file", sizeBytes: data.count, sha256: sha256Hex(data), chunks: 1, mediaType: "text/javascript", executable: nil),
-            ],
+            chunkSizeBytes: files.values.map(\.count).max() ?? 1,
+            files: entries,
+            runtimeArtifacts: runtimeArtifacts,
             error: nil
         )
     }
 
     func requestSourceChunk(_ request: SourceChunkRequestPayload, agent: NetworkAgent) async throws -> SourceChunkResponsePayload {
-        SourceChunkResponsePayload(
+        guard let path = request.target.path, let data = files[path] else {
+            return SourceChunkResponsePayload(
+                requestId: request.requestId,
+                status: "error",
+                snapshotId: request.snapshotId,
+                target: request.target,
+                chunkIndex: request.chunkIndex,
+                chunkCount: 1,
+                sha256: nil,
+                bytesBase64: nil,
+                error: SourceError(code: "not-found", message: "Unknown source file.")
+            )
+        }
+        return SourceChunkResponsePayload(
             requestId: request.requestId,
             status: "ok",
             snapshotId: request.snapshotId,
@@ -176,6 +317,51 @@ private struct FakeSourceTransport: SaySoSourceTransport {
             error: nil
         )
     }
+}
+
+private actor TestRuntimeLogSink: RuntimeLogSink {
+    private var lines: [String] = []
+
+    func appendRuntimeLog(_ line: String) async {
+        lines.append(line)
+    }
+
+    func waitForLine(containing value: String) async -> Bool {
+        for _ in 0..<50 {
+            if lines.contains(where: { $0.contains(value) }) {
+                return true
+            }
+            try? await Task.sleep(nanoseconds: 20_000_000)
+        }
+        return false
+    }
+}
+
+private func quickJSRuntimeArtifact(
+    sourcePath: String,
+    bytecodePath: String,
+    engineVersion: String = QuickJSRuntimeInstance.quickJSVersion,
+    formatVersion: String = QuickJSRuntimeInstance.bytecodeFormatVersion
+) -> SourceRuntimeArtifact {
+    SourceRuntimeArtifact(
+        artifactId: "test-quickjs-bytecode",
+        kind: "runtime-bytecode",
+        language: SourceRuntimeArtifactLanguage(
+            id: "javascript",
+            version: "ES2023",
+            profile: "sayso-runtime-single-script"
+        ),
+        sourcePath: sourcePath,
+        bytecodePath: bytecodePath,
+        bytecode: SourceRuntimeBytecode(
+            engine: "quickjs",
+            engineVersion: engineVersion,
+            format: "quickjs-binary-json-bytecode",
+            formatVersion: formatVersion,
+            evalType: "global",
+            mediaType: "application/vnd.sayso.quickjs-bytecode"
+        )
+    )
 }
 
 private func XCTAssertThrowsErrorAsync(

@@ -248,6 +248,11 @@ type SourceManifestResponse = {
     format: "tar.gz" | "zip";
     chunks: number;
   }>;
+  runtimeArtifacts?: Array<{
+    kind: string;
+    sourcePath: string;
+    bytecodePath: string;
+  }>;
 };
 
 type ForkOffersResponse = {
@@ -470,6 +475,7 @@ const sourceManifestResponse = JSON.parse(
   readFileSync(path.join(payloadDir, "source/source-manifest-response.json"), "utf8"),
 ) as SourceManifestResponse;
 if (sourceManifestResponse.status === "ok") {
+  const sourcePaths = new Set((sourceManifestResponse.files ?? []).map((file) => file.path));
   for (const file of sourceManifestResponse.files ?? []) {
     if (file.path.startsWith("/") || file.path.split("/").includes("..")) {
       errors.push(`source/source-manifest-response.json: invalid relative path ${file.path}`);
@@ -479,6 +485,40 @@ if (sourceManifestResponse.status === "ok") {
   for (const archive of sourceManifestResponse.archives ?? []) {
     if (archive.chunks < 1) errors.push(`source/source-manifest-response.json: archive ${archive.format} has no chunks`);
   }
+  for (const artifact of sourceManifestResponse.runtimeArtifacts ?? []) {
+    if (artifact.kind !== "runtime-bytecode") {
+      errors.push(`source/source-manifest-response.json: invalid runtime artifact kind ${artifact.kind}`);
+    }
+    if (!sourcePaths.has(artifact.sourcePath)) {
+      errors.push(`source/source-manifest-response.json: runtime artifact missing source ${artifact.sourcePath}`);
+    }
+    if (!sourcePaths.has(artifact.bytecodePath)) {
+      errors.push(`source/source-manifest-response.json: runtime artifact missing bytecode ${artifact.bytecodePath}`);
+    }
+  }
+}
+
+const invalidRuntimeArtifact = JSON.parse(JSON.stringify(sourceManifestResponse)) as Json;
+if (
+  typeof invalidRuntimeArtifact === "object" &&
+  invalidRuntimeArtifact &&
+  !Array.isArray(invalidRuntimeArtifact)
+) {
+  const record = invalidRuntimeArtifact as Record<string, unknown>;
+  if (record.status === "ok") {
+    const artifacts = record.runtimeArtifacts as Array<Record<string, unknown>> | undefined;
+    if (artifacts?.[0]) artifacts[0].kind = "native-binary";
+  }
+}
+if (
+  validate(
+    schemas["sayso://sayso.source/source-manifest-response/1"],
+    invalidRuntimeArtifact,
+    "source/invalid-runtime-artifact-kind",
+    "sayso://sayso.source/source-manifest-response/1",
+  ).length === 0
+) {
+  errors.push("source/invalid-runtime-artifact-kind: expected schema rejection");
 }
 
 const invalidSourceChunkRequest = JSON.parse(

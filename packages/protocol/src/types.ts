@@ -445,6 +445,26 @@ export type SourceArchiveEntry = {
   mediaType: string;
 };
 
+export type SourceRuntimeArtifact = {
+  artifactId: string;
+  kind: "runtime-bytecode";
+  language: {
+    id: "javascript";
+    version: "ES2023";
+    profile: "sayso-runtime-single-script";
+  };
+  sourcePath: string;
+  bytecodePath: string;
+  bytecode: {
+    engine: "quickjs";
+    engineVersion: string;
+    format: "quickjs-binary-json-bytecode";
+    formatVersion: string;
+    evalType: "global";
+    mediaType: "application/vnd.sayso.quickjs-bytecode";
+  };
+};
+
 export type SourceManifestResponsePayload =
   | {
       requestId: string;
@@ -455,6 +475,7 @@ export type SourceManifestResponsePayload =
       chunkSizeBytes: number;
       files: SourceFileEntry[];
       archives?: SourceArchiveEntry[];
+      runtimeArtifacts?: SourceRuntimeArtifact[];
     }
   | {
       requestId: string;

@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 const packageRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const sourcePath = path.join(packageRoot, "src/pong/runtime-app.js");
 const targetPath = path.join(packageRoot, "dist/pong/runtime-app.js");
+const bytecodePath = path.join(packageRoot, "src/pong/runtime-app.qjsc");
+const bytecodeTargetPath = path.join(packageRoot, "dist/pong/runtime-app.qjsc");
 const source = readFileSync(sourcePath, "utf8");
 
 const forbiddenPatterns = [
@@ -28,8 +30,13 @@ for (const { name, pattern } of forbiddenPatterns) {
 
 mkdirSync(path.dirname(targetPath), { recursive: true });
 copyFileSync(sourcePath, targetPath);
+copyFileSync(bytecodePath, bytecodeTargetPath);
 
 const targetSize = statSync(targetPath).size;
 if (targetSize !== Buffer.byteLength(source)) {
   throw new Error("runtime-app.js copy verification failed.");
+}
+const bytecodeSize = statSync(bytecodeTargetPath).size;
+if (bytecodeSize !== statSync(bytecodePath).size) {
+  throw new Error("runtime-app.qjsc copy verification failed.");
 }

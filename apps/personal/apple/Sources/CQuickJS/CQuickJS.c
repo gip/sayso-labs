@@ -6,6 +6,12 @@
 #include <string.h>
 #include <time.h>
 
+#ifndef CONFIG_VERSION
+#define CONFIG_VERSION "unknown"
+#endif
+
+#define SAYSO_QJS_BYTECODE_FORMAT_VERSION "5"
+
 struct SaySoQuickJSContext {
     JSRuntime *runtime;
     JSContext *context;
@@ -175,6 +181,17 @@ static int sayso_qjs_install_sayso_global(SaySoQuickJSContext *host) {
     return 1;
 }
 
+static int sayso_qjs_verify_registered_application(SaySoQuickJSContext *context, char *error_buffer, int error_buffer_length) {
+    if (!sayso_qjs_execute_pending_jobs(context, error_buffer, error_buffer_length)) {
+        return 0;
+    }
+    if (context->registered_application_json == 0) {
+        sayso_qjs_write_error(error_buffer, error_buffer_length, "Runtime application did not register an application.");
+        return 0;
+    }
+    return 1;
+}
+
 SaySoQuickJSContext *sayso_qjs_create(void) {
     SaySoQuickJSContext *host = (SaySoQuickJSContext *)calloc(1, sizeof(SaySoQuickJSContext));
     if (host == 0) {
@@ -254,11 +271,7 @@ int sayso_qjs_load(SaySoQuickJSContext *context, const char *program, char *erro
         return 0;
     }
     JS_FreeValue(context->context, result);
-    if (!sayso_qjs_execute_pending_jobs(context, error_buffer, error_buffer_length)) {
-        return 0;
-    }
-    if (context->registered_application_json == 0) {
-        sayso_qjs_write_error(error_buffer, error_buffer_length, "Runtime source did not register an application.");
+    if (!sayso_qjs_verify_registered_application(context, error_buffer, error_buffer_length)) {
         return 0;
     }
 
@@ -270,6 +283,98 @@ int sayso_qjs_load(SaySoQuickJSContext *context, const char *program, char *erro
     free(context->program);
     context->program = copy;
     return 1;
+}
+
+int sayso_qjs_load_bytecode(SaySoQuickJSContext *context, const uint8_t *bytecode, size_t bytecode_length, char *error_buffer, int error_buffer_length) {
+    if (context == 0 || context->context == 0) {
+        sayso_qjs_write_error(error_buffer, error_buffer_length, "QuickJS context is missing.");
+        return 0;
+    }
+    if (bytecode == 0 || bytecode_length == 0) {
+        sayso_qjs_write_error(error_buffer, error_buffer_length, "Runtime bytecode is empty.");
+        return 0;
+    }
+
+    JSValue function = JS_ReadObject(context->context, bytecode, bytecode_length, JS_READ_OBJ_BYTECODE);
+    if (JS_IsException(function)) {
+        sayso_qjs_write_exception(context->context, error_buffer, error_buffer_length);
+        JS_FreeValue(context->context, function);
+        return 0;
+    }
+
+    JSValue result = JS_EvalFunction(context->context, function);
+    if (JS_IsException(result)) {
+        sayso_qjs_write_exception(context->context, error_buffer, error_buffer_length);
+        JS_FreeValue(context->context, result);
+        return 0;
+    }
+    JS_FreeValue(context->context, result);
+    return sayso_qjs_verify_registered_application(context, error_buffer, error_buffer_length);
+}
+
+uint8_t *sayso_qjs_compile_bytecode(const char *program, size_t *bytecode_length, char *error_buffer, int error_buffer_length) {
+    if (bytecode_length != 0) {
+        *bytecode_length = 0;
+    }
+    if (program == 0 || strlen(program) == 0) {
+        sayso_qjs_write_error(error_buffer, error_buffer_length, "Runtime source is empty.");
+        return 0;
+    }
+
+    JSRuntime *runtime = JS_NewRuntime();
+    if (runtime == 0) {
+        sayso_qjs_write_error(error_buffer, error_buffer_length, "Unable to create QuickJS runtime.");
+        return 0;
+    }
+    JSContext *context = JS_NewContext(runtime);
+    if (context == 0) {
+        JS_FreeRuntime(runtime);
+        sayso_qjs_write_error(error_buffer, error_buffer_length, "Unable to create QuickJS context.");
+        return 0;
+    }
+
+    JSValue function = JS_Eval(
+        context,
+        program,
+        strlen(program),
+        "sayso-entrypoint.js",
+        JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_COMPILE_ONLY
+    );
+    if (JS_IsException(function)) {
+        sayso_qjs_write_exception(context, error_buffer, error_buffer_length);
+        JS_FreeValue(context, function);
+        JS_FreeContext(context);
+        JS_FreeRuntime(runtime);
+        return 0;
+    }
+
+    size_t compiled_length = 0;
+    uint8_t *compiled = JS_WriteObject(context, &compiled_length, function, JS_WRITE_OBJ_BYTECODE);
+    JS_FreeValue(context, function);
+    if (compiled == 0 || compiled_length == 0) {
+        JS_FreeContext(context);
+        JS_FreeRuntime(runtime);
+        sayso_qjs_write_error(error_buffer, error_buffer_length, "Unable to serialize QuickJS bytecode.");
+        return 0;
+    }
+
+    uint8_t *copy = (uint8_t *)malloc(compiled_length);
+    if (copy == 0) {
+        js_free(context, compiled);
+        JS_FreeContext(context);
+        JS_FreeRuntime(runtime);
+        sayso_qjs_write_error(error_buffer, error_buffer_length, "Unable to copy QuickJS bytecode.");
+        return 0;
+    }
+    memcpy(copy, compiled, compiled_length);
+    js_free(context, compiled);
+    JS_FreeContext(context);
+    JS_FreeRuntime(runtime);
+
+    if (bytecode_length != 0) {
+        *bytecode_length = compiled_length;
+    }
+    return copy;
 }
 
 const char *sayso_qjs_program(SaySoQuickJSContext *context) {
@@ -284,6 +389,14 @@ const char *sayso_qjs_registered_application_json(SaySoQuickJSContext *context) 
         return 0;
     }
     return context->registered_application_json;
+}
+
+const char *sayso_qjs_quickjs_version(void) {
+    return CONFIG_VERSION;
+}
+
+const char *sayso_qjs_bytecode_format_version(void) {
+    return SAYSO_QJS_BYTECODE_FORMAT_VERSION;
 }
 
 char *sayso_qjs_call_application(SaySoQuickJSContext *context, const char *method, const char *input_json, char *error_buffer, int error_buffer_length) {
@@ -364,5 +477,9 @@ char *sayso_qjs_call_application(SaySoQuickJSContext *context, const char *metho
 }
 
 void sayso_qjs_free_string(char *value) {
+    free(value);
+}
+
+void sayso_qjs_free_bytes(uint8_t *value) {
     free(value);
 }

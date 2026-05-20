@@ -265,7 +265,8 @@ const quickJsHost = await createQuickJsApplication(
       "signer.getAccount",
       "signer.signMessage",
       "local.text.write",
-      "local.text.read"
+      "local.text.read",
+      "test.hostObject"
     ],
     capabilities: {
       network: {

@@ -1,4 +1,5 @@
 packages:
+  - "../sayso-vm"
   - "apps/*"
   - "apps/*/*"
   - "packages/*"

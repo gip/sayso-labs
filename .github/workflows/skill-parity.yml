@@ -1,0 +1,37 @@
+name: SKILL Parity
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-skill-parity:
+    name: Check SKILL.md parity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sayso-labs
+        uses: actions/checkout@v6
+        with:
+          path: sayso-labs
+
+      - name: Checkout canonical sayso
+        uses: actions/checkout@v6
+        with:
+          repository: gip/sayso
+          ref: main
+          path: sayso
+
+      - name: Check SKILL.md parity
+        run: |
+          set -euo pipefail
+
+          for skill in sayso-protocol sayso-payment sayso-upgrade sayso-network sayso-claim sayso-runtime sayso-configure sayso-fork sayso-source; do
+            diff -u "sayso/${skill}/SKILL.md" "sayso-labs/skills/${skill}/SKILL.md"
+          done

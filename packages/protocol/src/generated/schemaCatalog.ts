@@ -3039,6 +3039,87 @@ const embeddedSchemas: ExtractedSkillSchema[] = [
             }
           }
         },
+        "sourceRuntimeArtifact": {
+          "type": "object",
+          "required": [
+            "artifactId",
+            "kind",
+            "language",
+            "sourcePath",
+            "bytecodePath",
+            "bytecode"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "artifactId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "const": "runtime-bytecode"
+            },
+            "language": {
+              "type": "object",
+              "required": [
+                "id",
+                "version",
+                "profile"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "const": "javascript"
+                },
+                "version": {
+                  "const": "ES2023"
+                },
+                "profile": {
+                  "const": "sayso-runtime-single-script"
+                }
+              }
+            },
+            "sourcePath": {
+              "$ref": "sayso://sayso.source/common#/$defs/relativePath"
+            },
+            "bytecodePath": {
+              "$ref": "sayso://sayso.source/common#/$defs/relativePath"
+            },
+            "bytecode": {
+              "type": "object",
+              "required": [
+                "engine",
+                "engineVersion",
+                "format",
+                "formatVersion",
+                "evalType",
+                "mediaType"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "engine": {
+                  "const": "quickjs"
+                },
+                "engineVersion": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "format": {
+                  "const": "quickjs-binary-json-bytecode"
+                },
+                "formatVersion": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "evalType": {
+                  "const": "global"
+                },
+                "mediaType": {
+                  "const": "application/vnd.sayso.quickjs-bytecode"
+                }
+              }
+            }
+          }
+        },
         "sourceChunkTarget": {
           "oneOf": [
             {
@@ -3341,6 +3422,13 @@ const embeddedSchemas: ExtractedSkillSchema[] = [
               "items": {
                 "$ref": "sayso://sayso.source/common#/$defs/sourceArchiveEntry"
               }
+            },
+            "runtimeArtifacts": {
+              "type": "array",
+              "items": {
+                "$ref": "sayso://sayso.source/common#/$defs/sourceRuntimeArtifact"
+              },
+              "uniqueItems": true
             }
           }
         },

@@ -186,7 +186,7 @@ const createApplication = ({ sayso }) => {
       skillId: "sayso.source",
       format: "files",
       entrypoint: "examples/pong/src/pong/runtime-app.js",
-      include: ["examples/pong/src/pong/runtime-app.js"],
+      include: ["examples/pong/src/pong/runtime-app.js", "examples/pong/src/pong/runtime-app.qjsc"],
     },
     hostOperations: ["params.get", "clock.nowIso", "pong.sourceManifest", "pong.sourceChunk"],
     capabilities: {
