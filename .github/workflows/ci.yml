@@ -17,9 +17,16 @@ jobs:
 
     steps:
       - name: Checkout sayso-labs
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: sayso-labs
+
+      - name: Checkout sayso-vm
+        uses: actions/checkout@v6
+        with:
+          repository: gip/sayso-vm
+          ref: main
+          path: sayso-vm
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -27,7 +34,7 @@ jobs:
           version: 10.0.0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm

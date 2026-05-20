@@ -17,12 +17,12 @@ jobs:
 
     steps:
       - name: Checkout sayso-labs
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: sayso-labs
 
       - name: Checkout canonical sayso
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: gip/sayso
           ref: main
