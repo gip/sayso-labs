@@ -176,9 +176,10 @@ Rules:
 - `runtimeArtifacts`, when present, declares runtime-ready artifacts that travel
   with the source snapshot. `sourcePath` and `bytecodePath` must both reference
   entries in `files`.
-- QuickJS bytecode artifacts use `bytecode.format =
-  "quickjs-binary-json-bytecode"`. Hosts must check `engineVersion`,
-  `formatVersion`, `evalType`, and `mediaType` before loading bytecode.
+- QuickJS bytecode artifacts use the SaySo VM QuickJS metadata profile with
+  `bytecode.format = "quickjs-binary-json-bytecode"`. Hosts must check
+  `engineVersion`, `formatVersion`, `evalType`, and `mediaType` before loading
+  bytecode.
 - `sayso.source` exposes code and static source assets. Runtime configuration
   values are discovered through `sayso.configure`.
 

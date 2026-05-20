@@ -19,6 +19,7 @@
   "dependencies": {
     "@jitl/quickjs-wasmfile-release-sync": "0.32.0",
     "@sayso-labs/protocol": "workspace:*",
+    "@sayso/vm": "workspace:*",
     "@xmtp/content-type-primitives": "^3.0.0",
     "@xmtp/node-sdk": "6.0.0-dev.4b2b209",
     "commander": "^14.0.3",
